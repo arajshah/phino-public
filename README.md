@@ -19,7 +19,7 @@ invisible from a single still image.
 ```
 phino-minimal/
 ├── configs/pretrain.yaml          # Training config
-├── dynaclip/
+├── train/
 │   ├── data/
 │   │   ├── generation.py          # Physics engine + data generation
 │   │   └── dataset.py             # Contrastive + probing datasets
