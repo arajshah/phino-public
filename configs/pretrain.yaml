@@ -1,0 +1,53 @@
+# PHINO Pre-training Configuration
+#
+# Trajectory-based dynamics contrastive fine-tuning of DINOv2-B/14.
+# Key recipe:
+#   - SoftInfoNCE with trajectory-MSE similarity labels
+#   - Hard mining: 30% same-image-diff-physics negatives + 30% diff-image-sim-physics positives
+#   - WiSE-FT disabled (backbone is free to drift)
+#   - 30K steps, batch 1024
+#   - Off-diagonal soft labels = 0 (no geometric-mean leak)
+#   - Trajectory similarity uses full-trajectory MSE (not last frame)
+
+model:
+  backbone: "dinov2_vitb14"
+  embed_dim: 512
+  freeze_backbone: false
+  unfreeze_last_n_blocks: -1
+  gradient_checkpointing: true
+
+loss:
+  name: "soft_infonce"
+  temperature: 0.07
+  similarity_temperature: 0.1
+  learnable_temperature: true
+
+training:
+  backbone_lr: 3.0e-5
+  head_lr: 1.0e-3
+  weight_decay: 0.05
+  warmup_steps: 500
+  total_steps: 30000
+  batch_size: 1024
+  grad_accum_steps: 1
+  use_bf16: true
+  wiseft_alpha: 0.0
+  use_physics_vectors: false
+
+data:
+  data_dir: "data/phino_data"
+  num_pairs: 500000
+  hard_neg_ratio: 0.3
+  hard_pos_ratio: 0.3
+  num_workers: 8
+
+logging:
+  log_every: 50
+  eval_every: 3000
+  save_every: 3000
+  use_wandb: false
+  project_name: "phino"
+
+output:
+  checkpoint_dir: "checkpoints/phino"
+  log_dir: "logs/pretrain"
