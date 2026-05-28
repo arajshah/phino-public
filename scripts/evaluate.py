@@ -24,15 +24,15 @@ import torch
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from dynaclip.models.backbones import (
+from train.models.backbones import (
     load_dynaclip,
     load_dynaclip_clsmean,
     load_dinov2_vitb14,
     load_dinov2_vitb14_clsmean,
     load_dinov2_vitl14,
 )
-from dynaclip.data.dataset import create_probe_dataloader
-from dynaclip.eval.linear_probing import PhysicsLinearProbing
+from train.data.dataset import create_probe_dataloader
+from train.eval.linear_probing import PhysicsLinearProbing
 
 logger = logging.getLogger(__name__)
 

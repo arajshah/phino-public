@@ -9,5 +9,14 @@ tqdm>=4.66.0
 pyyaml>=6.0
 scikit-learn>=1.4.0
 Pillow>=10.0.0
+# Data generation: MuJoCo physics + GPT-4o attribution + MolmoSpaces assets
+mujoco>=3.2.0
+openai>=1.30.0
+imageio>=2.34.0
+huggingface_hub>=0.23.0
+zstandard>=0.22.0
+pandas>=2.0.0
+requests>=2.31.0
+datasets>=2.19.0
 # Optional (uncomment if used):
 # wandb>=0.16.0           # only if logging.use_wandb=true

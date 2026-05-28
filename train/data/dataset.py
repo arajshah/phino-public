@@ -277,40 +277,25 @@ class DynaCLIPContrastiveDataset(Dataset):
 
         if not hasattr(self, '_traj_cache'):
             self._traj_cache = {}
-            from dynaclip.data.generation import AnalyticalPhysicsEngine
-            self._engine = AnalyticalPhysicsEngine()
 
         if idx in self._traj_cache:
             return self._traj_cache[idx]
 
-        # Try loading precomputed fingerprint from disk
+        # Load precomputed fingerprint from disk (always written by generation.py)
         fp_path = self.metadata[idx].get("fingerprint_path")
         if fp_path:
             fp = Path(fp_path)
             # Handle absolute paths that don't exist (data moved to different machine)
             if not fp.is_absolute() or not fp.exists():
-                fp = self.data_dir / fp.name  # Try relative to data_dir
+                fp = self.data_dir / "fingerprints" / fp.name
             if fp.exists():
-                data = np.load(fp)
-                traj = data["flat_trajectory"]
+                traj = np.load(fp)["flat_trajectory"]
                 self._traj_cache[idx] = traj
                 return traj
 
-        # Compute on the fly using analytical physics engine
-        from dynaclip.data.generation import PhysicsConfig, DIAGNOSTIC_ACTIONS
-        m = self.metadata[idx]
-        physics = PhysicsConfig(
-            mass=m["mass"],
-            static_friction=m["static_friction"],
-            restitution=m["restitution"],
-            material=m.get("material", "default"),
+        raise RuntimeError(
+            f"Missing trajectory fingerprint for idx {idx}; re-run data generation."
         )
-        traj = np.concatenate([
-            self._engine.execute_diagnostic_action(a, physics)
-            for a in DIAGNOSTIC_ACTIONS
-        ])
-        self._traj_cache[idx] = traj
-        return traj
 
     def _compute_proxy_similarity(self, i: int, j: int) -> float:
         """Compute dynamics similarity from physics trajectories.
@@ -319,7 +304,7 @@ class DynaCLIPContrastiveDataset(Dataset):
         entries and computes L2-based similarity. This replaces the old
         parameter-distance proxy with actual trajectory similarity.
         """
-        from dynaclip.data.generation import compute_dynamics_similarity_l2
+        from train.data.generation import compute_dynamics_similarity_l2
         traj_i = self._get_trajectory(i)
         traj_j = self._get_trajectory(j)
         return compute_dynamics_similarity_l2(traj_i, traj_j)

@@ -72,14 +72,14 @@ def _dinov2_cls_extract(model, images):
 # ---------------------------------------------------------------------------
 def load_dynaclip(checkpoint_path: Optional[str] = None) -> BackboneWrapper:
     """Load DynaCLIP (fine-tuned DINOv2-ViT-B/14)."""
-    from dynaclip.models.dynaclip import DynaCLIPEncoder
+    from train.models.dynaclip import DynaCLIPEncoder
     encoder = DynaCLIPEncoder(checkpoint_path=checkpoint_path, feature_type="cls")
     return BackboneWrapper("dynaclip", encoder, output_dim=encoder.output_dim)
 
 
 def load_dynaclip_projected(checkpoint_path: Optional[str] = None) -> BackboneWrapper:
     """Load DynaCLIP with projection head (512d physics-aware embeddings)."""
-    from dynaclip.models.dynaclip import DynaCLIPModel
+    from train.models.dynaclip import DynaCLIPModel
     model = DynaCLIPModel(backbone_name="dinov2_vitb14", embed_dim=512)
     if checkpoint_path:
         state_dict = torch.load(checkpoint_path, map_location="cpu", weights_only=False)
@@ -93,7 +93,7 @@ def load_dynaclip_projected(checkpoint_path: Optional[str] = None) -> BackboneWr
 
 def load_dynaclip_clsmean(checkpoint_path: Optional[str] = None) -> BackboneWrapper:
     """Load DynaCLIP backbone with CLS+mean features (1536d)."""
-    from dynaclip.models.dynaclip import DynaCLIPEncoder
+    from train.models.dynaclip import DynaCLIPEncoder
     encoder = DynaCLIPEncoder(checkpoint_path=checkpoint_path, feature_type="cls_mean")
     return BackboneWrapper("dynaclip_clsmean", encoder, output_dim=encoder.output_dim)
 

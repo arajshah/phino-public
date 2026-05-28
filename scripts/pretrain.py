@@ -12,18 +12,17 @@ Usage:
         training.total_steps=10000 data.data_dir=data_cache/dynaclip_v3_random \
         output.checkpoint_dir=checkpoints/ablation_random
 """
-
 import argparse
 import logging
 import yaml
 
 import torch
 
-from dynaclip.models.dynaclip import DynaCLIPModel
-from dynaclip.losses.contrastive import build_loss
-from dynaclip.data.dataset import create_contrastive_dataloader
-from dynaclip.trainers.pretrain import DynaCLIPTrainer
-from dynaclip.utils.helpers import setup_logging, set_seed, setup_distributed, cleanup_distributed, count_parameters
+from train.models.dynaclip import DynaCLIPModel
+from train.losses.contrastive import build_loss
+from train.data.dataset import create_contrastive_dataloader
+from train.trainers.pretrain import DynaCLIPTrainer
+from train.utils.helpers import setup_logging, set_seed, setup_distributed, cleanup_distributed, count_parameters
 
 logger = logging.getLogger(__name__)
 

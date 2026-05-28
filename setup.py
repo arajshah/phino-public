@@ -18,5 +18,13 @@ setup(
         "pyyaml>=6.0",
         "scikit-learn>=1.4.0",
         "Pillow>=10.0.0",
+        "mujoco>=3.2.0",
+        "openai>=1.30.0",
+        "imageio>=2.34.0",
+        "huggingface_hub>=0.23.0",
+        "zstandard>=0.22.0",
+        "pandas>=2.0.0",
+        "requests>=2.31.0",
+        "datasets>=2.19.0",
     ],
 )

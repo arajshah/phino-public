@@ -1,63 +1,101 @@
 """
-Generate PHINO training data.
+Generate PHINO training data (GPT-4o attribution + MuJoCo trajectories).
 
-For each DomainNet image, samples N physics configurations from
-category-grounded material priors, runs the analytical physics engine
-for 4 diagnostic actions (push, lift, flick, press), and precomputes
-pairwise trajectory-MSE similarities used as soft contrastive labels.
+For each MolmoSpaces object asset: render a canonical image, ask GPT-4o (or the
+offline mock) to predict mass/friction/restitution ranges, sample N physics
+configs, simulate the 5 diagnostic actions in MuJoCo, and precompute pairwise
+trajectory-MSE similarities used as soft contrastive labels.
+
+Assets are downloaded on demand from the MolmoSpaces HuggingFace dataset
+(allenai/molmospaces). Requires an offscreen GL backend for rendering — set
+MUJOCO_GL=egl (done automatically below if unset).
 
 Output layout:
     {output_dir}/
-        metadata.json          # N_images * num_physics entries
-        fingerprints/          # one .npz per entry (trajectories + physics vector)
-        similarity_matrix.npz  # precomputed pairwise similarities
+        images/                # rendered asset views (DINO input)
+        attribution/           # cached GPT-4o predictions (one json per asset)
+        fingerprints/          # one .npz trajectory per (asset, physics)
+        metadata.json
+        similarity_matrix.npz
+        invisible_physics_test.json
+
+Examples:
+    # offline smoke run on a small THOR bundle (no API key needed)
+    python scripts/generate_data.py --download_subset thor \\
+        --max_assets 8 --num_physics 3 --num_pairs 500 --mock \\
+        --output_dir data/phino_smoke
+
+    # full run on already-downloaded assets, live GPT-4o (OPENAI_API_KEY set)
+    python scripts/generate_data.py --asset_root /data/molmospaces_thor \\
+        --max_assets 2000 --num_physics 5 --output_dir data/phino_data
 """
 
 import argparse
 import logging
+import os
 import sys
 import time
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+os.environ.setdefault("MUJOCO_GL", "egl")
+
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
     handlers=[logging.StreamHandler()],
 )
-
-from dynaclip.data.generation import DynaCLIPDataGenerator
-
 logger = logging.getLogger(__name__)
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Generate PHINO training data")
-    parser.add_argument("--output_dir", type=str, default="data/phino_data")
-    parser.add_argument("--dataset_root", type=str, required=True,
-                        help="Root containing domainnet/real/<category>/*.jpg")
-    parser.add_argument("--max_images", type=int, default=20000)
-    parser.add_argument("--num_physics", type=int, default=5,
-                        help="Physics configurations sampled per image")
-    parser.add_argument("--num_pairs", type=int, default=500000,
-                        help="Pairwise similarities to precompute")
-    parser.add_argument("--seed", type=int, default=42)
-    args = parser.parse_args()
+    p = argparse.ArgumentParser(description="Generate PHINO training data")
+    p.add_argument("--output_dir", type=str, default="data/phino_data")
+    p.add_argument("--asset_root", type=str, default=None,
+                   help="Directory of already-extracted MolmoSpaces assets. "
+                        "If omitted, a bundle is downloaded via --download_subset.")
+    p.add_argument("--download_subset", type=str, default=None,
+                   choices=["thor", "objaverse"],
+                   help="Download+extract a MolmoSpaces object bundle to <output>/assets.")
+    p.add_argument("--bundle", type=str, default=None,
+                   help="Specific bundle archive name (default: a small THOR bundle).")
+    p.add_argument("--max_assets", type=int, default=2000)
+    p.add_argument("--num_physics", type=int, default=5,
+                   help="Physics configs sampled per asset (within GPT-4o ranges).")
+    p.add_argument("--num_pairs", type=int, default=500000,
+                   help="Pairwise similarities to precompute.")
+    p.add_argument("--img_size", type=int, default=224)
+    p.add_argument("--gpt_model", type=str, default="gpt-4o")
+    p.add_argument("--mock", action="store_true",
+                   help="Force offline mock attribution (no API calls).")
+    p.add_argument("--seed", type=int, default=42)
+    args = p.parse_args()
+
+    from train.data.generation import PhinoDataGenerator
+    from train.data.assets import download_molmospaces_bundle
+
+    # Resolve asset root: download a bundle if none provided.
+    asset_root = args.asset_root
+    if asset_root is None:
+        subset = args.download_subset or "thor"
+        asset_root = str(Path(args.output_dir) / "assets")
+        logger.info(f"Downloading MolmoSpaces '{subset}' bundle to {asset_root}")
+        download_molmospaces_bundle(asset_root, subset=subset, bundle=args.bundle)
+
+    backend = "mock" if args.mock else "auto"
 
     t0 = time.time()
-    logger.info(f"Generating PHINO data: output={args.output_dir}, "
-                f"max_images={args.max_images}, num_physics={args.num_physics}")
-
-    gen = DynaCLIPDataGenerator(
+    gen = PhinoDataGenerator(
         output_dir=args.output_dir,
-        dataset_root=args.dataset_root,
-        num_physics_per_image=args.num_physics,
-        max_images=args.max_images,
+        asset_root=asset_root,
+        num_physics_per_asset=args.num_physics,
+        max_assets=args.max_assets,
         seed=args.seed,
-        similarity_metric="l2",
+        attribution_backend=backend,
+        gpt_model=args.gpt_model,
+        img_size=args.img_size,
     )
     gen.generate_all(compute_similarity=True, max_sim_pairs=args.num_pairs)
-
     logger.info(f"Done in {(time.time()-t0)/60:.1f} min -> {args.output_dir}")
 
 
