@@ -65,6 +65,8 @@ def main():
     p.add_argument("--num_pairs", type=int, default=500000,
                    help="Pairwise similarities to precompute.")
     p.add_argument("--img_size", type=int, default=224)
+    p.add_argument("--n_views", type=int, default=4,
+                   help="Multi-view renders per asset fed to GPT-4o (view 0 = DINO image).")
     p.add_argument("--gpt_model", type=str, default="gpt-4o")
     p.add_argument("--mock", action="store_true",
                    help="Force offline mock attribution (no API calls).")
@@ -94,6 +96,7 @@ def main():
         attribution_backend=backend,
         gpt_model=args.gpt_model,
         img_size=args.img_size,
+        n_views=args.n_views,
     )
     gen.generate_all(compute_similarity=True, max_sim_pairs=args.num_pairs)
     logger.info(f"Done in {(time.time()-t0)/60:.1f} min -> {args.output_dir}")

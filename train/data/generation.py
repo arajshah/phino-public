@@ -105,6 +105,7 @@ class PhinoDataGenerator:
         attribution_backend: str = "auto",  # auto | live | mock
         gpt_model: str = "gpt-4o",
         img_size: int = 224,
+        n_views: int = 4,
         similarity_metric: str = "mse",
     ):
         self.output_dir = Path(output_dir)
@@ -115,6 +116,7 @@ class PhinoDataGenerator:
         self.seed = seed
         self.rng = np.random.default_rng(seed)
         self.img_size = img_size
+        self.n_views = n_views
         self.sim_fn = SIMILARITY_METRICS.get(similarity_metric, compute_dynamics_similarity_mse)
 
         self.engine = MuJoCoPhysicsEngine()
@@ -126,7 +128,7 @@ class PhinoDataGenerator:
         )
 
     def generate_all(self, compute_similarity: bool = True, max_sim_pairs: int = 500000):
-        from train.data.assets import discover_assets, render_asset
+        from train.data.assets import discover_assets, render_multiview
 
         logger.info("=== PHINO data generation (GPT-4o + MuJoCo) ===")
         records = discover_assets(self.asset_root, max_assets=self.max_assets)
@@ -144,14 +146,17 @@ class PhinoDataGenerator:
 
         for rec in records:
             try:
-                # 1. render image (also gives us the scene for a mass hint)
-                img_path = img_dir / f"{_safe(rec.asset_id)}.png"
-                render_asset(rec.mjcf_path, str(img_path), self.img_size, engine=self.engine)
+                # 1. render multi-view images (view 0 = canonical DINO training image)
+                views = render_multiview(
+                    rec.mjcf_path, str(img_dir), rec.asset_id,
+                    n_views=self.n_views, img_size=self.img_size, engine=self.engine,
+                )
+                img_path = views[0]
                 mass_hint = self._geometric_mass(rec.mjcf_path)
 
-                # 2. GPT-4o attribution (cached) -> property ranges
+                # 2. GPT-4o attribution from all views (cached) -> property ranges
                 attr = self.attributor.attribute(
-                    rec.asset_id, image_path=str(img_path), mass_hint=mass_hint,
+                    rec.asset_id, image_paths=views, mass_hint=mass_hint,
                 )
 
                 # 3-4. sample N physics configs, simulate trajectories
