@@ -111,8 +111,10 @@ class PhinoDataGenerator:
         attribution_store: str = "attributions/attributions.json",  # single shared json
         attribution_workers: int = 8,  # concurrent GPT calls (GPT is the bottleneck)
         provider: str = None,  # force azure | openai | qwen (else auto-detect)
+        use_category_hint: bool = True,  # tell the VLM the known object class
     ):
         self.attribution_workers = attribution_workers
+        self.use_category_hint = use_category_hint
         self.output_dir = Path(output_dir)
         self.output_dir.mkdir(parents=True, exist_ok=True)
         self.asset_root = asset_root
@@ -171,7 +173,9 @@ class PhinoDataGenerator:
 
         # Phase 2: GPT-4o attribution for all assets, CONCURRENTLY (GPT is the bottleneck).
         attrs = self.attributor.attribute_many(
-            [(rec.asset_id, views, hint) for rec, views, hint in jobs],
+            [(rec.asset_id, views, hint,
+              rec.category if self.use_category_hint else None)
+             for rec, views, hint in jobs],
             max_workers=self.attribution_workers,
         )
 

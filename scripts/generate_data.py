@@ -81,6 +81,8 @@ def main():
                    help="Concurrent GPT API calls (GPT is the throughput bottleneck).")
     p.add_argument("--mock", action="store_true",
                    help="Force offline mock attribution (no API calls).")
+    p.add_argument("--no_category_hint", action="store_true",
+                   help="Do NOT tell the VLM the known object class (pure-visual ablation).")
     p.add_argument("--keep_renders", action="store_true",
                    help="Keep rendered images. Default: delete them after generation "
                         "(regenerate v0 with scripts/render_images.py before training).")
@@ -124,6 +126,7 @@ def main():
         attribution_store=attribution_store,
         attribution_workers=args.attribution_workers,
         provider=args.provider,
+        use_category_hint=not args.no_category_hint,
     )
     gen.generate_all(compute_similarity=True, max_sim_pairs=args.num_pairs,
                      keep_renders=args.keep_renders)

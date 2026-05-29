@@ -180,11 +180,14 @@ class PhysicalAttributor:
         image_paths: Optional[list] = None,
         image_path: Optional[str] = None,
         mass_hint: Optional[float] = None,
+        category: Optional[str] = None,
     ) -> AttributionResult:
         """Return cached / freshly-computed physical attribution for one asset.
 
-        `image_paths` is a list of multi-view renders fed to GPT-4o; `image_path`
-        is accepted for backwards compatibility (single view).
+        `image_paths` is a list of multi-view renders fed to the VLM; `image_path`
+        is accepted for backwards compatibility (single view). `category` is the
+        asset's known object class (from MolmoSpaces) — given to the VLM so it
+        grounds the object correctly instead of guessing identity from pixels.
         """
         if image_paths is None:
             image_paths = [image_path] if image_path else []
@@ -195,27 +198,27 @@ class PhysicalAttributor:
             except Exception:
                 logger.warning(f"Corrupt entry for {asset_id} in store, recomputing")
 
-        result = self._compute(asset_id, image_paths, mass_hint)
+        result = self._compute(asset_id, image_paths, mass_hint, category)
         self._store[asset_id] = result.to_dict()
         self._save()
         return result
 
     def attribute_many(self, items: list, max_workers: int = 8) -> dict:
-        """Attribute many assets, calling GPT concurrently (GPT is IO-bound).
+        """Attribute many assets, calling the VLM concurrently (API is IO-bound).
 
-        `items` is a list of (asset_id, image_paths, mass_hint). Returns
+        `items` is a list of (asset_id, image_paths, mass_hint, category). Returns
         {asset_id: AttributionResult}. Cached assets are returned without a call;
         the store is written once at the end.
         """
         results, todo = {}, []
-        for asset_id, paths, hint in items:
+        for asset_id, paths, hint, cat in items:
             if asset_id in self._store:
                 try:
                     results[asset_id] = AttributionResult.from_dict(self._store[asset_id])
                     continue
                 except Exception:
                     pass
-            todo.append((asset_id, paths, hint))
+            todo.append((asset_id, paths, hint, cat))
         if not todo:
             return results
 
@@ -226,7 +229,7 @@ class PhysicalAttributor:
             from concurrent.futures import ThreadPoolExecutor, as_completed
             logger.info(f"Attributing {len(todo)} assets with {max_workers} concurrent workers")
             with ThreadPoolExecutor(max_workers=max_workers) as ex:
-                futs = {ex.submit(self._compute, a, p, h): a for a, p, h in todo}
+                futs = {ex.submit(self._compute, a, p, h, c): a for a, p, h, c in todo}
                 done = 0
                 for fut in as_completed(futs):
                     results[futs[fut]] = fut.result()
@@ -234,8 +237,8 @@ class PhysicalAttributor:
                     if done % 20 == 0:
                         logger.info(f"  attributed {done}/{len(todo)}")
         else:
-            for asset_id, paths, hint in todo:
-                results[asset_id] = self._compute(asset_id, paths, hint)
+            for asset_id, paths, hint, cat in todo:
+                results[asset_id] = self._compute(asset_id, paths, hint, cat)
 
         for asset_id, res in results.items():
             self._store[asset_id] = res.to_dict()
@@ -243,14 +246,14 @@ class PhysicalAttributor:
         return results
 
     def _compute(self, asset_id: str, image_paths: list,
-                 mass_hint: Optional[float]) -> AttributionResult:
+                 mass_hint: Optional[float], category: Optional[str] = None) -> AttributionResult:
         """Compute one attribution (with mock fallback), clamped. No store write."""
         if self.backend == "live":
             try:
                 if self.provider == "qwen":
-                    result = self._attribute_qwen(asset_id, image_paths)
+                    result = self._attribute_qwen(asset_id, image_paths, category)
                 else:
-                    result = self._attribute_live(asset_id, image_paths)
+                    result = self._attribute_live(asset_id, image_paths, category)
             except Exception as e:
                 logger.error(f"VLM attribution failed for {asset_id}: {e}; "
                              "falling back to mock")
@@ -258,6 +261,14 @@ class PhysicalAttributor:
         else:
             result = self._attribute_mock(asset_id, mass_hint)
         return self._clamp(result)
+
+    def _prompt_for(self, category: Optional[str]) -> str:
+        """CoT prompt, optionally grounded with the known object class so the VLM
+        doesn't have to guess identity from pixels (e.g. blinds vs a brush)."""
+        if not category:
+            return COT_SYSTEM_PROMPT
+        nice = re.sub(r"(?<!^)(?=[A-Z])", " ", str(category)).replace("_", " ").strip().lower()
+        return f"The object shown is a {nice}.\n\n{COT_SYSTEM_PROMPT}"
 
     def _save(self):
         """Write the whole store back to the single json file (atomic)."""
@@ -284,7 +295,8 @@ class PhysicalAttributor:
         self._qwen_processor = AutoProcessor.from_pretrained(self.model)
         logger.info("Local VLM loaded")
 
-    def _attribute_qwen(self, asset_id: str, image_paths: list) -> AttributionResult:
+    def _attribute_qwen(self, asset_id: str, image_paths: list,
+                        category: Optional[str] = None) -> AttributionResult:
         valid = [p for p in (image_paths or []) if p and Path(p).exists()]
         if not valid:
             raise FileNotFoundError(f"no images for qwen attribution: {image_paths}")
@@ -293,7 +305,7 @@ class PhysicalAttributor:
         from qwen_vl_utils import process_vision_info
 
         content = [{"type": "image", "image": f"file://{Path(p).resolve()}"} for p in valid]
-        content.append({"type": "text", "text": COT_SYSTEM_PROMPT})
+        content.append({"type": "text", "text": self._prompt_for(category)})
         messages = [{"role": "user", "content": content}]
         proc = self._qwen_processor
         text = proc.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
@@ -317,7 +329,8 @@ class PhysicalAttributor:
             backend=f"qwen:{self.model.split('/')[-1]}",
         )
 
-    def _attribute_live(self, asset_id: str, image_paths: list) -> AttributionResult:
+    def _attribute_live(self, asset_id: str, image_paths: list,
+                        category: Optional[str] = None) -> AttributionResult:
         valid = [p for p in (image_paths or []) if p and Path(p).exists()]
         if not valid:
             raise FileNotFoundError(f"no images for live attribution: {image_paths}")
@@ -326,7 +339,7 @@ class PhysicalAttributor:
 
         # Keep everything in a single user turn (no system role) — a system role
         # with strict formatting tends to trip Azure's jailbreak prompt-shield.
-        content = [{"type": "text", "text": COT_SYSTEM_PROMPT}]
+        content = [{"type": "text", "text": self._prompt_for(category)}]
         for p in valid:
             b64 = base64.b64encode(Path(p).read_bytes()).decode()
             content.append({"type": "image_url",
