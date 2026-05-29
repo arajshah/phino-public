@@ -37,6 +37,8 @@ def main():
     p = argparse.ArgumentParser(description="Re-render PHINO v0 training images")
     p.add_argument("--data_dir", type=str, required=True)
     p.add_argument("--img_size", type=int, default=224)
+    p.add_argument("--n_views", type=int, default=0,
+                   help="Views to render per asset (0 = use metadata view_paths count).")
     p.add_argument("--delete", action="store_true",
                    help="Instead of rendering, delete the images/ directory.")
     args = p.parse_args()
@@ -56,25 +58,28 @@ def main():
     with open(data_dir / "metadata.json") as f:
         metadata = json.load(f)
 
-    # One render per unique asset (all its physics entries share view0).
+    # One render job per unique asset; recreate ALL of its views (random-view
+    # training samples among view_paths, so every view must exist).
     seen, jobs = set(), []
     for e in metadata:
         aid = e["asset_id"]
         if aid in seen:
             continue
         seen.add(aid)
-        jobs.append((aid, e["mjcf_path"], e["image_path"]))
+        views = e.get("view_paths") or [e["image_path"]]
+        jobs.append((aid, e["mjcf_path"], views))
 
     eng = MuJoCoPhysicsEngine()
     img_dir.mkdir(parents=True, exist_ok=True)
     t0, done, skipped = time.time(), 0, 0
-    for aid, mjcf_path, image_path in jobs:
-        if resolve_image_path(data_dir, image_path) is not None:
+    for aid, mjcf_path, views in jobs:
+        n_views = args.n_views or len(views)
+        if all(resolve_image_path(data_dir, v) is not None for v in views):
             skipped += 1
             continue
         try:
             render_multiview(mjcf_path, str(img_dir), aid,
-                             n_views=1, img_size=args.img_size, engine=eng)
+                             n_views=n_views, img_size=args.img_size, engine=eng)
             done += 1
         except Exception as e:
             logger.warning(f"Failed to render {aid}: {type(e).__name__}: {e}")

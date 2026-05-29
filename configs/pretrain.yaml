@@ -40,6 +40,7 @@ data:
   hard_neg_ratio: 0.3
   hard_pos_ratio: 0.3
   num_workers: 8
+  random_views: true   # train on a random view of each object (view-invariant physics)
 
 logging:
   log_every: 50

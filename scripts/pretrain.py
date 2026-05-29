@@ -119,6 +119,7 @@ def main():
         num_pairs=data_cfg["num_pairs"],
         hard_neg_ratio=data_cfg["hard_neg_ratio"],
         hard_pos_ratio=data_cfg["hard_pos_ratio"],
+        random_views=data_cfg.get("random_views", True),
         seed=args.seed,
     )
 

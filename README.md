@@ -79,7 +79,7 @@ similarity labels.
 ```bash
 # Live GPT-4o (key in env). Downloads a MolmoSpaces THOR bundle (~12 MB, ~91 objects).
 python scripts/generate_data.py --download_subset thor \
-    --max_assets 200 --num_physics 5 --n_views 4 \
+    --max_assets 200 --num_physics 5 --n_views 3 \
     --num_pairs 200000 --output_dir data/phino_data
 
 # Offline, no key (mock attribution):

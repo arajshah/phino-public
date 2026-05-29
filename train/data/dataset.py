@@ -7,6 +7,7 @@ Invisible Physics test split. Uses REAL images from DomainNet/COCO.
 
 import json
 import logging
+import random
 from pathlib import Path
 from typing import Optional
 import numpy as np
@@ -79,12 +80,17 @@ class DynaCLIPContrastiveDataset(Dataset):
         dino_embeddings_path: Optional[str] = None,
         similarity_path: Optional[str] = None,
         seed: int = 42,
+        random_views: bool = True,
     ):
         super().__init__()
         self.data_dir = Path(data_dir)
         self.split = split
         self.transform = transform or get_train_transform()
         self.num_pairs = num_pairs
+        # Train on a RANDOM view of each object (view-invariant physical awareness);
+        # also makes same-object/different-physics hard negatives learnable (the two
+        # views differ, so the encoder can assign them different embeddings).
+        self.random_views = random_views
         self.hard_neg_ratio = hard_neg_ratio
         self.hard_pos_ratio = hard_pos_ratio
         self.rng = np.random.default_rng(seed)
@@ -373,11 +379,16 @@ class DynaCLIPContrastiveDataset(Dataset):
         }
 
     def _load_image(self, idx: int) -> torch.Tensor:
-        """Load a REAL image from disk. Returns black image on failure."""
-        img_path = resolve_image_path(self.data_dir, self.metadata[idx]["image_path"])
+        """Load a REAL image from disk (a random view of the object if enabled)."""
+        entry = self.metadata[idx]
+        stored = entry["image_path"]
+        if self.random_views:
+            views = entry.get("view_paths")
+            if views:
+                stored = random.choice(views)
+        img_path = resolve_image_path(self.data_dir, stored)
         if img_path is None:
-            raise FileNotFoundError(
-                f"image not found for idx {idx}: {self.metadata[idx]['image_path']}")
+            raise FileNotFoundError(f"image not found for idx {idx}: {stored}")
         from PIL import Image
         img = Image.open(img_path).convert("RGB")
         return self.transform(img)

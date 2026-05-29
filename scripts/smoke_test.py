@@ -47,7 +47,7 @@ def main():
     p = argparse.ArgumentParser(description="PHINO smoke test")
     p.add_argument("--asset_root", type=str, required=True)
     p.add_argument("--n_assets", type=int, default=3)
-    p.add_argument("--n_views", type=int, default=4)
+    p.add_argument("--n_views", type=int, default=3)
     p.add_argument("--img_size", type=int, default=256)
     p.add_argument("--fps", type=int, default=20)
     p.add_argument("--mock", action="store_true", help="Force offline mock attribution.")

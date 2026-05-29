@@ -65,7 +65,7 @@ def main():
     p.add_argument("--num_pairs", type=int, default=500000,
                    help="Pairwise similarities to precompute.")
     p.add_argument("--img_size", type=int, default=224)
-    p.add_argument("--n_views", type=int, default=4,
+    p.add_argument("--n_views", type=int, default=3,
                    help="Multi-view renders per asset fed to GPT-4o (view 0 = DINO image).")
     p.add_argument("--gpt_model", type=str, default="gpt-4o")
     p.add_argument("--attribution_store", type=str, default="attributions/attributions.json",

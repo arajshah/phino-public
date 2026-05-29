@@ -106,7 +106,7 @@ class PhinoDataGenerator:
         attribution_backend: str = "auto",  # auto | live | mock
         gpt_model: str = "gpt-4o",
         img_size: int = 224,
-        n_views: int = 4,
+        n_views: int = 3,
         similarity_metric: str = "mse",
         attribution_store: str = "attributions/attributions.json",  # single shared json
     ):

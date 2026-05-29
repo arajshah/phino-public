@@ -179,7 +179,7 @@ def render_multiview(
     mjcf_path: str,
     out_dir: str,
     asset_id: str,
-    n_views: int = 4,
+    n_views: int = 3,
     img_size: int = 224,
     base_azimuth: float = 120.0,
     engine=None,
