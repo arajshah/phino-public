@@ -67,10 +67,18 @@ def main():
     p.add_argument("--img_size", type=int, default=224)
     p.add_argument("--n_views", type=int, default=3,
                    help="Multi-view renders per asset fed to GPT-4o (view 0 = DINO image).")
-    p.add_argument("--gpt_model", type=str, default="gpt-4o")
+    p.add_argument("--gpt_model", type=str, default=None,
+                   help="VLM model id. Default: gpt-4o (api) or "
+                        "Qwen/Qwen2.5-VL-32B-Instruct (provider=qwen).")
+    p.add_argument("--provider", type=str, default=None,
+                   choices=["azure", "openai", "qwen"],
+                   help="Force the attribution provider (else auto-detect from env). "
+                        "'qwen' runs a local Qwen2.5-VL model on the GPU(s).")
     p.add_argument("--attribution_store", type=str, default="attributions/attributions.json",
                    help="Single shared, git-tracked JSON of GPT attributions (keyed by "
                         "asset_id). Commit this one file to share with everyone.")
+    p.add_argument("--attribution_workers", type=int, default=8,
+                   help="Concurrent GPT API calls (GPT is the throughput bottleneck).")
     p.add_argument("--mock", action="store_true",
                    help="Force offline mock attribution (no API calls).")
     p.add_argument("--keep_renders", action="store_true",
@@ -91,6 +99,16 @@ def main():
         download_molmospaces_bundle(asset_root, subset=subset, bundle=args.bundle)
 
     backend = "mock" if args.mock else "auto"
+    # Sensible defaults for the local-Qwen path.
+    gpt_model = args.gpt_model or (
+        "Qwen/Qwen2.5-VL-32B-Instruct" if args.provider == "qwen" else "gpt-4o")
+    # Auto-suffix the store with the model name (so gpt-4o / qwen stores stay
+    # separate and it's obvious which model produced each), unless overridden.
+    import re
+    attribution_store = args.attribution_store
+    if attribution_store == "attributions/attributions.json":
+        slug = re.sub(r"[^a-z0-9.]+", "-", gpt_model.split("/")[-1].lower()).strip("-")
+        attribution_store = f"attributions/attributions_{slug}.json"
 
     t0 = time.time()
     gen = PhinoDataGenerator(
@@ -100,10 +118,12 @@ def main():
         max_assets=args.max_assets,
         seed=args.seed,
         attribution_backend=backend,
-        gpt_model=args.gpt_model,
+        gpt_model=gpt_model,
         img_size=args.img_size,
         n_views=args.n_views,
-        attribution_store=args.attribution_store,
+        attribution_store=attribution_store,
+        attribution_workers=args.attribution_workers,
+        provider=args.provider,
     )
     gen.generate_all(compute_similarity=True, max_sim_pairs=args.num_pairs,
                      keep_renders=args.keep_renders)

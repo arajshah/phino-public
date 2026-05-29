@@ -109,7 +109,10 @@ class PhinoDataGenerator:
         n_views: int = 3,
         similarity_metric: str = "mse",
         attribution_store: str = "attributions/attributions.json",  # single shared json
+        attribution_workers: int = 8,  # concurrent GPT calls (GPT is the bottleneck)
+        provider: str = None,  # force azure | openai | qwen (else auto-detect)
     ):
+        self.attribution_workers = attribution_workers
         self.output_dir = Path(output_dir)
         self.output_dir.mkdir(parents=True, exist_ok=True)
         self.asset_root = asset_root
@@ -132,6 +135,7 @@ class PhinoDataGenerator:
             backend=attribution_backend,
             model=gpt_model,
             seed=seed,
+            provider=provider,
         )
 
     def generate_all(self, compute_similarity: bool = True, max_sim_pairs: int = 500000,
@@ -152,22 +156,30 @@ class PhinoDataGenerator:
         fingerprints: List[np.ndarray] = []
         image_group = 0  # one group per successfully-processed asset
 
+        # Phase 1: render multi-view images + geometric mass hint (serial, GPU-fast).
+        jobs = []  # (rec, views, mass_hint)
         for rec in records:
             try:
-                # 1. render multi-view images (view 0 = canonical DINO training image)
                 views = render_multiview(
                     rec.mjcf_path, str(img_dir), rec.asset_id,
                     n_views=self.n_views, img_size=self.img_size, engine=self.engine,
                 )
-                img_path = views[0]
-                mass_hint = self._geometric_mass(rec.mjcf_path)
+                jobs.append((rec, views, self._geometric_mass(rec.mjcf_path)))
+            except Exception as e:
+                logger.warning(f"Render failed {rec.asset_id}: {type(e).__name__}: {e}")
+        logger.info(f"Rendered {len(jobs)} assets; attributing (GPT concurrent)…")
 
-                # 2. GPT-4o attribution from all views (cached) -> property ranges
-                attr = self.attributor.attribute(
-                    rec.asset_id, image_paths=views, mass_hint=mass_hint,
-                )
+        # Phase 2: GPT-4o attribution for all assets, CONCURRENTLY (GPT is the bottleneck).
+        attrs = self.attributor.attribute_many(
+            [(rec.asset_id, views, hint) for rec, views, hint in jobs],
+            max_workers=self.attribution_workers,
+        )
 
-                # 3-4. sample N physics configs, simulate trajectories
+        # Phase 3: sample physics + simulate trajectories (per asset).
+        for rec, views, _ in jobs:
+            attr = attrs[rec.asset_id]
+            img_path = views[0]
+            try:
                 for _ in range(self.num_physics):
                     physics = PhysicsConfig.sample_from_attribution(
                         attr, self.rng, category=rec.category,

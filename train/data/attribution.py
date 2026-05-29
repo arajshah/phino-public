@@ -114,7 +114,11 @@ class PhysicalAttributor:
         backend: str = "auto",          # auto | live | mock
         model: str = "gpt-4o",
         seed: int = 42,
+        provider: Optional[str] = None,  # force azure | openai | qwen (else auto-detect)
     ):
+        self._forced_provider = provider
+        self._qwen_model = None
+        self._qwen_processor = None
         # All attributions live in ONE json file keyed by asset_id (the shared,
         # git-trackable store). Loaded once, written back whenever a new asset is
         # attributed, so GPT is never called twice for the same asset.
@@ -150,12 +154,17 @@ class PhysicalAttributor:
     def _resolve_backend(self, backend: str) -> str:
         if backend == "mock":
             return "mock"
-        provider = self._detect_provider()
+        # qwen = local transformers model, no API credentials needed
+        if self._forced_provider == "qwen":
+            self.provider = "qwen"
+            return "live"
+        provider = self._forced_provider or self._detect_provider()
         if backend == "live":
             if provider is None:
                 raise RuntimeError(
                     "backend='live' but no credentials found. Set AZURE_OPENAI_API_KEY"
-                    " + AZURE_OPENAI_ENDPOINT (Azure) or OPENAI_API_KEY (OpenAI).")
+                    " + AZURE_OPENAI_ENDPOINT (Azure) or OPENAI_API_KEY (OpenAI), "
+                    "or use --provider qwen for a local model.")
             self.provider = provider
             return "live"
         # auto
@@ -186,20 +195,69 @@ class PhysicalAttributor:
             except Exception:
                 logger.warning(f"Corrupt entry for {asset_id} in store, recomputing")
 
+        result = self._compute(asset_id, image_paths, mass_hint)
+        self._store[asset_id] = result.to_dict()
+        self._save()
+        return result
+
+    def attribute_many(self, items: list, max_workers: int = 8) -> dict:
+        """Attribute many assets, calling GPT concurrently (GPT is IO-bound).
+
+        `items` is a list of (asset_id, image_paths, mass_hint). Returns
+        {asset_id: AttributionResult}. Cached assets are returned without a call;
+        the store is written once at the end.
+        """
+        results, todo = {}, []
+        for asset_id, paths, hint in items:
+            if asset_id in self._store:
+                try:
+                    results[asset_id] = AttributionResult.from_dict(self._store[asset_id])
+                    continue
+                except Exception:
+                    pass
+            todo.append((asset_id, paths, hint))
+        if not todo:
+            return results
+
+        # Concurrency only helps IO-bound API providers; a local GPU model (qwen)
+        # runs serially (threads would contend / OOM).
+        if self.backend == "live" and self.provider in ("azure", "openai") and max_workers > 1:
+            self._client, self._deployment = self._build_client()  # pre-build (thread-safe reuse)
+            from concurrent.futures import ThreadPoolExecutor, as_completed
+            logger.info(f"Attributing {len(todo)} assets with {max_workers} concurrent workers")
+            with ThreadPoolExecutor(max_workers=max_workers) as ex:
+                futs = {ex.submit(self._compute, a, p, h): a for a, p, h in todo}
+                done = 0
+                for fut in as_completed(futs):
+                    results[futs[fut]] = fut.result()
+                    done += 1
+                    if done % 20 == 0:
+                        logger.info(f"  attributed {done}/{len(todo)}")
+        else:
+            for asset_id, paths, hint in todo:
+                results[asset_id] = self._compute(asset_id, paths, hint)
+
+        for asset_id, res in results.items():
+            self._store[asset_id] = res.to_dict()
+        self._save()
+        return results
+
+    def _compute(self, asset_id: str, image_paths: list,
+                 mass_hint: Optional[float]) -> AttributionResult:
+        """Compute one attribution (with mock fallback), clamped. No store write."""
         if self.backend == "live":
             try:
-                result = self._attribute_live(asset_id, image_paths)
+                if self.provider == "qwen":
+                    result = self._attribute_qwen(asset_id, image_paths)
+                else:
+                    result = self._attribute_live(asset_id, image_paths)
             except Exception as e:
-                logger.error(f"GPT-4o attribution failed for {asset_id}: {e}; "
+                logger.error(f"VLM attribution failed for {asset_id}: {e}; "
                              "falling back to mock")
                 result = self._attribute_mock(asset_id, mass_hint)
         else:
             result = self._attribute_mock(asset_id, mass_hint)
-
-        result = self._clamp(result)
-        self._store[asset_id] = result.to_dict()
-        self._save()
-        return result
+        return self._clamp(result)
 
     def _save(self):
         """Write the whole store back to the single json file (atomic)."""
@@ -208,6 +266,57 @@ class PhysicalAttributor:
         tmp.replace(self.store_path)
 
     # ----- backends ------------------------------------------------------
+    def _ensure_qwen(self):
+        """Lazy-load a local Qwen2.5-VL model across available GPUs."""
+        if self._qwen_model is not None:
+            return
+        import torch
+        from transformers import AutoModelForImageTextToText, AutoProcessor
+        # Load on a SINGLE GPU. device_map="auto" splits a model that already fits
+        # on one 80GB H100 across both cards as a *sequential* pipeline (only one GPU
+        # active at a time + per-layer cross-GPU copies) → ~2 tok/s. One card → 10-20x.
+        dev = os.environ.get("QWEN_DEVICE", "cuda:0")
+        logger.info(f"Loading local VLM {self.model} on {dev} (bf16, sdpa)…")
+        self._qwen_model = AutoModelForImageTextToText.from_pretrained(
+            self.model, dtype=torch.bfloat16, device_map=dev,
+            attn_implementation="sdpa")
+        self._qwen_model.eval()
+        self._qwen_processor = AutoProcessor.from_pretrained(self.model)
+        logger.info("Local VLM loaded")
+
+    def _attribute_qwen(self, asset_id: str, image_paths: list) -> AttributionResult:
+        valid = [p for p in (image_paths or []) if p and Path(p).exists()]
+        if not valid:
+            raise FileNotFoundError(f"no images for qwen attribution: {image_paths}")
+        self._ensure_qwen()
+        import torch
+        from qwen_vl_utils import process_vision_info
+
+        content = [{"type": "image", "image": f"file://{Path(p).resolve()}"} for p in valid]
+        content.append({"type": "text", "text": COT_SYSTEM_PROMPT})
+        messages = [{"role": "user", "content": content}]
+        proc = self._qwen_processor
+        text = proc.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
+        image_inputs, video_inputs = process_vision_info(messages)
+        inputs = proc(text=[text], images=image_inputs, videos=video_inputs,
+                      padding=True, return_tensors="pt").to(self._qwen_model.device)
+        with torch.no_grad():
+            # Qwen writes verbose CoT before the JSON — allow enough tokens so the
+            # final JSON block isn't truncated (would fall back to mock otherwise).
+            gen = self._qwen_model.generate(**inputs, max_new_tokens=1280, do_sample=False)
+        trimmed = gen[:, inputs.input_ids.shape[1]:]
+        out = proc.batch_decode(trimmed, skip_special_tokens=True,
+                                clean_up_tokenization_spaces=False)[0]
+        parsed = _extract_json(out)
+        return AttributionResult(
+            asset_id=asset_id,
+            mass_kg=PropertyRange(**parsed["mass_kg"]),
+            static_friction=PropertyRange(**parsed["static_friction"]),
+            restitution=PropertyRange(**parsed["restitution"]),
+            reasoning=parsed.get("reasoning", out[:200]),
+            backend=f"qwen:{self.model.split('/')[-1]}",
+        )
+
     def _attribute_live(self, asset_id: str, image_paths: list) -> AttributionResult:
         valid = [p for p in (image_paths or []) if p and Path(p).exists()]
         if not valid:

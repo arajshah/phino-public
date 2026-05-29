@@ -40,34 +40,55 @@ export MUJOCO_GL=egl          # offscreen rendering (or osmesa). generate/render
 ```
 Requires a GPU with an offscreen GL backend for MuJoCo rendering.
 
-### Configure the GPT API (provider auto-detected)
+### Choose the attribution VLM
 
-Attribution auto-detects the provider from environment variables. **Only the API
-key is required** — endpoint / version / deployment have sensible defaults that
-any user can override.
-
-**Azure OpenAI**
-```bash
-export AZURE_OPENAI_API_KEY="..."                 # required
-export AZURE_OPENAI_ENDPOINT="https://<res>.openai.azure.com"   # default: cml-amine
-export AZURE_OPENAI_DEPLOYMENT="gpt-4o"           # your deployment name (or AZURE_OPENAI_MODEL)
-export AZURE_OPENAI_API_VERSION="2025-04-01-preview"
-```
-
-**Standard OpenAI / compatible proxy**
-```bash
-export OPENAI_API_KEY="sk-..."                    # required
-export OPENAI_BASE_URL="https://.../v1"           # optional (proxy / 3rd-party endpoint)
-```
-
-**No key →** the pipeline falls back to a deterministic offline **mock** (mass
-anchored to asset geometry), so everything runs end-to-end without API access.
-Force it with `--mock`. Defaults live in `train/data/attribution.py`
-(`AZURE_*_DEFAULT`); the chain-of-thought prompt is in
+The model that reasons about physics is pluggable via `--provider`
+(`azure` | `openai` | `qwen`). If omitted, the provider is auto-detected from env
+vars. The chain-of-thought prompt is shared across all of them and lives in
 `train/data/prompts/physical_attribution_cot.txt` (edit it without touching code).
 
-> Tip: put your key in `~/.phino_env` (`export AZURE_OPENAI_API_KEY=...`) and
-> `source ~/.phino_env` before running, to keep it out of shell history.
+**Azure OpenAI (GPT-4o)** — only the key is required; endpoint/version/deployment
+have defaults (in `train/data/attribution.py`, `AZURE_*_DEFAULT`):
+```bash
+export AZURE_OPENAI_API_KEY="..."                 # required
+export AZURE_OPENAI_ENDPOINT="https://<res>.openai.azure.com"
+export AZURE_OPENAI_DEPLOYMENT="gpt-4o"           # deployment name (or AZURE_OPENAI_MODEL)
+export AZURE_OPENAI_API_VERSION="2025-04-01-preview"
+python scripts/generate_data.py --provider azure ...        # or just omit --provider
+```
+
+**Standard OpenAI / compatible proxy (incl. a local vLLM server)**:
+```bash
+export OPENAI_API_KEY="sk-..."                    # any non-empty string for a local server
+export OPENAI_BASE_URL="https://.../v1"           # e.g. http://localhost:8000/v1 for vLLM
+python scripts/generate_data.py --provider openai --gpt_model <model-id> ...
+```
+
+**Local Qwen2.5-VL (no API, runs on your GPU)** — reasons fully offline with
+HuggingFace `transformers`. Default model `Qwen/Qwen2.5-VL-32B-Instruct`, loaded on
+a single GPU (`QWEN_DEVICE`, default `cuda:0`; a 32B fits one 80GB card):
+```bash
+python scripts/generate_data.py --provider qwen ...                       # 32B (default)
+python scripts/generate_data.py --provider qwen \
+    --gpt_model Qwen/Qwen2.5-VL-72B-Instruct ...                          # 72B (needs more VRAM)
+```
+Needs `transformers>=4.49`, `accelerate`, `qwen-vl-utils` (`pip install` them).
+Throughput ≈ ~30 s/asset on an H100 (`transformers.generate`). For large runs,
+serve Qwen with **vLLM** instead and point `--provider openai` at it (paged-attention
++ batching ⇒ far higher throughput):
+```bash
+pip install vllm   # in a separate venv
+vllm serve Qwen/Qwen2.5-VL-32B-Instruct --port 8000 --limit-mm-per-prompt '{"image": 3}'
+OPENAI_API_KEY=x OPENAI_BASE_URL=http://localhost:8000/v1 \
+  python scripts/generate_data.py --provider openai \
+  --gpt_model Qwen/Qwen2.5-VL-32B-Instruct --attribution_workers 16 ...
+```
+
+**No provider / no key →** deterministic offline **mock** (mass anchored to asset
+geometry) so the pipeline runs end-to-end without any model. Force with `--mock`.
+
+> Tip: keep secrets in `~/.phino_env` (`export AZURE_OPENAI_API_KEY=...`) and
+> `source ~/.phino_env` before running, to stay out of shell history.
 
 ---
 
@@ -106,11 +127,18 @@ What happens per asset:
 Key flags: `--num_physics` (configs/asset), `--num_pairs` (precomputed similarities),
 `--n_views`, `--mock`, `--keep_renders` (default deletes renders), `--attribution_store`.
 
-### Where GPT attributions are saved
+### Where attributions are saved
 
-**One JSON file, keyed by `asset_id`:** `attributions/attributions.json` (override
-with `--attribution_store`). It lives **outside** the gitignored `data/` so you can
-**commit and share it** — anyone who clones reuses it and never re-calls GPT:
+**One JSON file per model, keyed by `asset_id`**, auto-named after the model so you
+can tell them apart (override with `--attribution_store`):
+
+| provider / model | file |
+|---|---|
+| Azure/OpenAI GPT-4o | `attributions/attributions_gpt-4o.json` |
+| local Qwen2.5-VL-32B | `attributions/attributions_qwen2.5-vl-32b-instruct.json` |
+
+They live **outside** the gitignored `data/` so you can **commit and share them** —
+anyone who clones reuses them and never re-calls the model:
 
 ```json
 {
@@ -125,10 +153,12 @@ with `--attribution_store`). It lives **outside** the gitignored `data/` so you 
 }
 ```
 
-The store is a cache: an `asset_id` already present is reused (no API call), and a
-mock re-run never overwrites a real `live:*` entry. Share it with:
+Each store is a cache: an `asset_id` already present is reused (no model call), and a
+mock re-run never overwrites a real `live:*` / `qwen:*` entry. The `backend` field
+records which model produced each row (`live:azure`, `live:openai`, `qwen:<model>`,
+or `mock`). Share with:
 ```bash
-git add attributions/attributions.json && git commit -m "GPT-4o attributions" && git push
+git add attributions/ && git commit -m "Physical attributions (GPT-4o / Qwen)" && git push
 ```
 
 ---

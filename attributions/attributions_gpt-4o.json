@@ -1,0 +1,1822 @@
+{
+  "Aluminum_Foil_1": {
+    "asset_id": "Aluminum_Foil_1",
+    "mass_kg": {
+      "mean": 4.0,
+      "low": 2.0,
+      "high": 6.0
+    },
+    "static_friction": {
+      "mean": 0.4,
+      "low": 0.3,
+      "high": 0.5
+    },
+    "restitution": {
+      "mean": 0.6,
+      "low": 0.5,
+      "high": 0.7
+    },
+    "reasoning": "The object is a hollow metal pipe, likely steel or aluminum, approximately 1 meter long and 10 cm in diameter, with moderate mass, friction, and restitution properties.",
+    "backend": "live:azure"
+  },
+  "Blinds_1": {
+    "asset_id": "Blinds_1",
+    "mass_kg": {
+      "mean": 0.8,
+      "low": 0.5,
+      "high": 1.2
+    },
+    "static_friction": {
+      "mean": 0.8,
+      "low": 0.6,
+      "high": 1.0
+    },
+    "restitution": {
+      "mean": 0.3,
+      "low": 0.2,
+      "high": 0.4
+    },
+    "reasoning": "The object is a rectangular brush or mat with rubber or plastic bristles and a solid base, likely lightweight and moderately grippy.",
+    "backend": "live:azure"
+  },
+  "Boot_1": {
+    "asset_id": "Boot_1",
+    "mass_kg": {
+      "mean": 2.0,
+      "low": 1.5,
+      "high": 2.5
+    },
+    "static_friction": {
+      "mean": 0.4,
+      "low": 0.3,
+      "high": 0.5
+    },
+    "restitution": {
+      "mean": 0.5,
+      "low": 0.4,
+      "high": 0.6
+    },
+    "reasoning": "The object is a pair of hollow, life-sized leg-like structures made of plastic or rubber, lightweight and moderately elastic.",
+    "backend": "live:azure"
+  },
+  "CD_1": {
+    "asset_id": "CD_1",
+    "mass_kg": {
+      "mean": 0.015,
+      "low": 0.012,
+      "high": 0.018
+    },
+    "static_friction": {
+      "mean": 0.4,
+      "low": 0.3,
+      "high": 0.5
+    },
+    "restitution": {
+      "mean": 0.3,
+      "low": 0.2,
+      "high": 0.4
+    },
+    "reasoning": "The object resembles a CD/DVD made of polycarbonate plastic with a metallic coating, lightweight and rigid, with moderate friction and low bounce on hard surfaces.",
+    "backend": "live:azure"
+  },
+  "Candle_1": {
+    "asset_id": "Candle_1",
+    "mass_kg": {
+      "mean": 0.5,
+      "low": 0.3,
+      "high": 1.0
+    },
+    "static_friction": {
+      "mean": 0.4,
+      "low": 0.2,
+      "high": 0.6
+    },
+    "restitution": {
+      "mean": 0.5,
+      "low": 0.3,
+      "high": 0.7
+    },
+    "reasoning": "The object is a cylindrical shape likely made of plastic or painted metal, approximately 10\u201320 cm in length and 5\u201310 cm in diameter, hollow and moderately lightweight.",
+    "backend": "live:azure"
+  },
+  "Candle_2": {
+    "asset_id": "Candle_2",
+    "mass_kg": {
+      "mean": 1.5,
+      "low": 0.5,
+      "high": 3.0
+    },
+    "static_friction": {
+      "mean": 0.4,
+      "low": 0.2,
+      "high": 0.6
+    },
+    "restitution": {
+      "mean": 0.3,
+      "low": 0.2,
+      "high": 0.5
+    },
+    "reasoning": "The object is a cylindrical rod, likely solid and made of wood, plastic, or metal, with dimensions around 1 meter in length and 3\u20135 cm in diameter.",
+    "backend": "live:azure"
+  },
+  "Candle_3": {
+    "asset_id": "Candle_3",
+    "mass_kg": {
+      "mean": 1.5,
+      "low": 0.8,
+      "high": 2.5
+    },
+    "static_friction": {
+      "mean": 0.4,
+      "low": 0.2,
+      "high": 0.6
+    },
+    "restitution": {
+      "mean": 0.3,
+      "low": 0.2,
+      "high": 0.5
+    },
+    "reasoning": "The object appears to be a decorative or functional cylindrical piece, likely made of metal and wood/plastic, with moderate size and density.",
+    "backend": "live:azure"
+  },
+  "Candle_4": {
+    "asset_id": "Candle_4",
+    "mass_kg": {
+      "mean": 0.5,
+      "low": 0.3,
+      "high": 0.8
+    },
+    "static_friction": {
+      "mean": 0.8,
+      "low": 0.6,
+      "high": 1.0
+    },
+    "restitution": {
+      "mean": 0.5,
+      "low": 0.4,
+      "high": 0.6
+    },
+    "reasoning": "The object resembles a tool-like structure with a rubber/plastic base and a metal/plastic shaft, moderately light and durable.",
+    "backend": "live:azure"
+  },
+  "Candle_5": {
+    "asset_id": "Candle_5",
+    "mass_kg": {
+      "mean": 0.5,
+      "low": 0.3,
+      "high": 0.8
+    },
+    "static_friction": {
+      "mean": 0.4,
+      "low": 0.3,
+      "high": 0.5
+    },
+    "restitution": {
+      "mean": 0.3,
+      "low": 0.2,
+      "high": 0.4
+    },
+    "reasoning": "The object appears to be a small pin-like structure made of metal and wood, moderately heavy for its size, with typical friction and restitution values for its materials.",
+    "backend": "live:azure"
+  },
+  "Candle_6": {
+    "asset_id": "Candle_6",
+    "mass_kg": {
+      "mean": 0.8,
+      "low": 0.5,
+      "high": 1.2
+    },
+    "static_friction": {
+      "mean": 0.4,
+      "low": 0.3,
+      "high": 0.5
+    },
+    "restitution": {
+      "mean": 0.3,
+      "low": 0.2,
+      "high": 0.4
+    },
+    "reasoning": "The object resembles a turned wooden spindle or furniture leg, likely solid wood, moderately dense, and of medium size.",
+    "backend": "live:azure"
+  },
+  "Cloth_1": {
+    "asset_id": "Cloth_1",
+    "mass_kg": {
+      "mean": 0.2,
+      "low": 0.1,
+      "high": 0.4
+    },
+    "static_friction": {
+      "mean": 0.8,
+      "low": 0.6,
+      "high": 1.0
+    },
+    "restitution": {
+      "mean": 0.4,
+      "low": 0.3,
+      "high": 0.5
+    },
+    "reasoning": "The object resembles a crumpled lightweight material, likely rubber or plastic, with moderate friction and bounce properties.",
+    "backend": "live:azure"
+  },
+  "Cloth_10": {
+    "asset_id": "Cloth_10",
+    "mass_kg": {
+      "mean": 0.2,
+      "low": 0.1,
+      "high": 0.4
+    },
+    "static_friction": {
+      "mean": 0.6,
+      "low": 0.4,
+      "high": 0.8
+    },
+    "restitution": {
+      "mean": 0.5,
+      "low": 0.3,
+      "high": 0.7
+    },
+    "reasoning": "The object appears to be a small, irregularly shaped, lightweight synthetic material resembling foam or rubber, with moderate friction and bounce properties.",
+    "backend": "live:azure"
+  },
+  "Cloth_11": {
+    "asset_id": "Cloth_11",
+    "mass_kg": {
+      "mean": 2.0,
+      "low": 1.5,
+      "high": 3.0
+    },
+    "static_friction": {
+      "mean": 0.8,
+      "low": 0.6,
+      "high": 1.0
+    },
+    "restitution": {
+      "mean": 0.2,
+      "low": 0.1,
+      "high": 0.3
+    },
+    "reasoning": "The object resembles a dense, irregularly shaped piece of stone or ceramic, likely solid and moderately sized.",
+    "backend": "live:azure"
+  },
+  "Cloth_12": {
+    "asset_id": "Cloth_12",
+    "mass_kg": {
+      "mean": 5.0,
+      "low": 3.0,
+      "high": 8.0
+    },
+    "static_friction": {
+      "mean": 0.6,
+      "low": 0.4,
+      "high": 0.8
+    },
+    "restitution": {
+      "mean": 0.3,
+      "low": 0.2,
+      "high": 0.5
+    },
+    "reasoning": "The object appears to be a solid, irregularly shaped piece of dense material, likely stone, metal, or plastic, with moderate size and weight.",
+    "backend": "live:azure"
+  },
+  "Cloth_2": {
+    "asset_id": "Cloth_2",
+    "mass_kg": {
+      "mean": 0.2,
+      "low": 0.1,
+      "high": 0.5
+    },
+    "static_friction": {
+      "mean": 0.4,
+      "low": 0.3,
+      "high": 0.6
+    },
+    "restitution": {
+      "mean": 0.3,
+      "low": 0.2,
+      "high": 0.5
+    },
+    "reasoning": "The object appears to be a lightweight, hollow, irregularly shaped structure made of a smooth material like plastic or fabric, with dimensions around 20-30 cm.",
+    "backend": "live:azure"
+  },
+  "Cloth_3": {
+    "asset_id": "Cloth_3",
+    "mass_kg": {
+      "mean": 3.0,
+      "low": 2.0,
+      "high": 5.0
+    },
+    "static_friction": {
+      "mean": 0.3,
+      "low": 0.2,
+      "high": 0.4
+    },
+    "restitution": {
+      "mean": 0.5,
+      "low": 0.4,
+      "high": 0.6
+    },
+    "reasoning": "The object is a dense, metallic or plastic abstract sculpture, approximately 20\u201340 cm in size, solid and moderately heavy for its size.",
+    "backend": "live:azure"
+  },
+  "Cloth_4": {
+    "asset_id": "Cloth_4",
+    "mass_kg": {
+      "mean": 2.0,
+      "low": 1.0,
+      "high": 5.0
+    },
+    "static_friction": {
+      "mean": 0.4,
+      "low": 0.3,
+      "high": 0.5
+    },
+    "restitution": {
+      "mean": 0.3,
+      "low": 0.2,
+      "high": 0.4
+    },
+    "reasoning": "The object is a metallic, irregularly shaped sculpture, likely solid and dense, with properties typical of polished metal on a hard surface.",
+    "backend": "live:azure"
+  },
+  "Cloth_5": {
+    "asset_id": "Cloth_5",
+    "mass_kg": {
+      "mean": 0.3,
+      "low": 0.1,
+      "high": 0.5
+    },
+    "static_friction": {
+      "mean": 1.0,
+      "low": 0.6,
+      "high": 1.2
+    },
+    "restitution": {
+      "mean": 0.3,
+      "low": 0.0,
+      "high": 0.6
+    },
+    "reasoning": "The object appears to be a lightweight, flexible material like fabric, rubber, or plastic, with low mass, high friction, and low to moderate bounce.",
+    "backend": "live:azure"
+  },
+  "Cloth_6": {
+    "asset_id": "Cloth_6",
+    "mass_kg": {
+      "mean": 0.2,
+      "low": 0.05,
+      "high": 0.5
+    },
+    "static_friction": {
+      "mean": 0.4,
+      "low": 0.2,
+      "high": 0.6
+    },
+    "restitution": {
+      "mean": 0.3,
+      "low": 0.1,
+      "high": 0.5
+    },
+    "reasoning": "The object appears to be an irregularly shaped, lightweight material such as fabric, paper, or thin plastic, with a size of approximately 20\u201350 cm and low density.",
+    "backend": "live:azure"
+  },
+  "Cloth_7": {
+    "asset_id": "Cloth_7",
+    "mass_kg": {
+      "mean": 0.5,
+      "low": 0.3,
+      "high": 1.0
+    },
+    "static_friction": {
+      "mean": 0.8,
+      "low": 0.6,
+      "high": 1.2
+    },
+    "restitution": {
+      "mean": 0.3,
+      "low": 0.2,
+      "high": 0.5
+    },
+    "reasoning": "The object appears to be a lightweight, flexible material resembling cloth or rubber, with low density and irregular shape.",
+    "backend": "live:azure"
+  },
+  "Cloth_8": {
+    "asset_id": "Cloth_8",
+    "mass_kg": {
+      "mean": 0.5,
+      "low": 0.3,
+      "high": 1.0
+    },
+    "static_friction": {
+      "mean": 0.6,
+      "low": 0.4,
+      "high": 0.8
+    },
+    "restitution": {
+      "mean": 0.4,
+      "low": 0.3,
+      "high": 0.5
+    },
+    "reasoning": "The object appears to be a small, lightweight, irregularly shaped item made of plastic or rubber, with moderate friction and bounce properties.",
+    "backend": "live:azure"
+  },
+  "Cloth_9": {
+    "asset_id": "Cloth_9",
+    "mass_kg": {
+      "mean": 2.0,
+      "low": 1.5,
+      "high": 2.5
+    },
+    "static_friction": {
+      "mean": 0.6,
+      "low": 0.5,
+      "high": 0.7
+    },
+    "restitution": {
+      "mean": 0.2,
+      "low": 0.1,
+      "high": 0.3
+    },
+    "reasoning": "The object appears to be a dense, solid piece of stone or mineral, roughly 15\u201320 cm in size, with typical physical properties for such materials.",
+    "backend": "live:azure"
+  },
+  "Dog_Bed_1_1": {
+    "asset_id": "Dog_Bed_1_1",
+    "mass_kg": {
+      "mean": 0.25,
+      "low": 0.2,
+      "high": 0.35
+    },
+    "static_friction": {
+      "mean": 0.9,
+      "low": 0.8,
+      "high": 1.0
+    },
+    "restitution": {
+      "mean": 0.6,
+      "low": 0.5,
+      "high": 0.7
+    },
+    "reasoning": "The object is a dense, solid rubber-like disk resembling a hockey puck, with high friction and moderate bounce properties.",
+    "backend": "live:azure"
+  },
+  "Dog_Bed_1_2": {
+    "asset_id": "Dog_Bed_1_2",
+    "mass_kg": {
+      "mean": 0.8,
+      "low": 0.5,
+      "high": 1.2
+    },
+    "static_friction": {
+      "mean": 0.8,
+      "low": 0.6,
+      "high": 1.0
+    },
+    "restitution": {
+      "mean": 0.6,
+      "low": 0.4,
+      "high": 0.8
+    },
+    "reasoning": "The object appears to be a hollow ring with a dense core, likely made of rubber or plastic, lightweight for its size, with moderate friction and bounce properties.",
+    "backend": "live:azure"
+  },
+  "Dog_Bed_2_1": {
+    "asset_id": "Dog_Bed_2_1",
+    "mass_kg": {
+      "mean": 1.5,
+      "low": 1.0,
+      "high": 2.5
+    },
+    "static_friction": {
+      "mean": 0.4,
+      "low": 0.3,
+      "high": 0.6
+    },
+    "restitution": {
+      "mean": 0.3,
+      "low": 0.2,
+      "high": 0.5
+    },
+    "reasoning": "The object consists of a solid red block (likely plastic or wood) and a lightweight gray component (likely fabric or foam), making it moderately light with medium friction and low restitution.",
+    "backend": "live:azure"
+  },
+  "Dumbbell_1_1": {
+    "asset_id": "Dumbbell_1_1",
+    "mass_kg": {
+      "mean": 1.0,
+      "low": 0.5,
+      "high": 3.0
+    },
+    "static_friction": {
+      "mean": 0.5,
+      "low": 0.4,
+      "high": 0.6
+    },
+    "restitution": {
+      "mean": 0.4,
+      "low": 0.3,
+      "high": 0.6
+    },
+    "reasoning": "The object is likely a small pedestal or stand made of plastic or wood, around 20\u201330 cm tall, light or moderately heavy depending on material.",
+    "backend": "live:azure"
+  },
+  "Footstool_1_1_1": {
+    "asset_id": "Footstool_1_1_1",
+    "mass_kg": {
+      "mean": 10.0,
+      "low": 8.0,
+      "high": 15.0
+    },
+    "static_friction": {
+      "mean": 0.5,
+      "low": 0.4,
+      "high": 0.6
+    },
+    "restitution": {
+      "mean": 0.3,
+      "low": 0.2,
+      "high": 0.4
+    },
+    "reasoning": "The object is a black cube with rounded edges, likely made of wood or dense plastic, approximately 30\u201340 cm on each side, solid and moderately dense.",
+    "backend": "live:azure"
+  },
+  "Footstool_1_2_1": {
+    "asset_id": "Footstool_1_2_1",
+    "mass_kg": {
+      "mean": 5.0,
+      "low": 3.0,
+      "high": 8.0
+    },
+    "static_friction": {
+      "mean": 0.5,
+      "low": 0.4,
+      "high": 0.6
+    },
+    "restitution": {
+      "mean": 0.3,
+      "low": 0.2,
+      "high": 0.4
+    },
+    "reasoning": "The object appears to be a solid rectangular block, likely made of wood or dense plastic, with dimensions similar to a small stool or decorative block.",
+    "backend": "live:azure"
+  },
+  "Footstool_2_1": {
+    "asset_id": "Footstool_2_1",
+    "mass_kg": {
+      "mean": 4.0,
+      "low": 3.0,
+      "high": 6.0
+    },
+    "static_friction": {
+      "mean": 0.4,
+      "low": 0.3,
+      "high": 0.5
+    },
+    "restitution": {
+      "mean": 0.3,
+      "low": 0.2,
+      "high": 0.4
+    },
+    "reasoning": "The object consists of a hollow cube and a solid block, likely made of plastic or wood, with moderate size and weight.",
+    "backend": "live:azure"
+  },
+  "Laundry_Hamper_1_1": {
+    "asset_id": "Laundry_Hamper_1_1",
+    "mass_kg": {
+      "mean": 0.8,
+      "low": 0.5,
+      "high": 1.5
+    },
+    "static_friction": {
+      "mean": 0.4,
+      "low": 0.3,
+      "high": 0.6
+    },
+    "restitution": {
+      "mean": 0.2,
+      "low": 0.1,
+      "high": 0.3
+    },
+    "reasoning": "The object appears to be a cylindrical fabric bag with handles, likely hollow and lightweight, with physical properties typical of fabric-based items.",
+    "backend": "live:azure"
+  },
+  "Laundry_Hamper_1_2": {
+    "asset_id": "Laundry_Hamper_1_2",
+    "mass_kg": {
+      "mean": 2.0,
+      "low": 1.0,
+      "high": 4.0
+    },
+    "static_friction": {
+      "mean": 0.6,
+      "low": 0.4,
+      "high": 0.8
+    },
+    "restitution": {
+      "mean": 0.3,
+      "low": 0.2,
+      "high": 0.4
+    },
+    "reasoning": "The object is a hollow cylindrical container made of lightweight material such as wicker, fabric, or thin wood, with medium size and low density.",
+    "backend": "live:azure"
+  },
+  "Laundry_Hamper_1_3": {
+    "asset_id": "Laundry_Hamper_1_3",
+    "mass_kg": {
+      "mean": 2.0,
+      "low": 1.0,
+      "high": 3.0
+    },
+    "static_friction": {
+      "mean": 0.4,
+      "low": 0.3,
+      "high": 0.5
+    },
+    "restitution": {
+      "mean": 0.3,
+      "low": 0.2,
+      "high": 0.4
+    },
+    "reasoning": "The object is a hollow cylindrical drum-like structure made of lightweight materials such as plastic or fabric, with handles for portability.",
+    "backend": "live:azure"
+  },
+  "Laundry_Hamper_1_4": {
+    "asset_id": "Laundry_Hamper_1_4",
+    "mass_kg": {
+      "mean": 1.5,
+      "low": 1.0,
+      "high": 2.5
+    },
+    "static_friction": {
+      "mean": 0.8,
+      "low": 0.6,
+      "high": 1.2
+    },
+    "restitution": {
+      "mean": 0.2,
+      "low": 0.1,
+      "high": 0.3
+    },
+    "reasoning": "The object is a cylindrical fabric bag, likely hollow and lightweight, with properties typical of a medium-sized duffel bag resting on a hard surface.",
+    "backend": "live:azure"
+  },
+  "Newspaper_1": {
+    "asset_id": "Newspaper_1",
+    "mass_kg": {
+      "mean": 0.1,
+      "low": 0.05,
+      "high": 0.2
+    },
+    "static_friction": {
+      "mean": 0.4,
+      "low": 0.3,
+      "high": 0.5
+    },
+    "restitution": {
+      "mean": 0.1,
+      "low": 0.05,
+      "high": 0.2
+    },
+    "reasoning": "The object is a folded newspaper made of thin paper, light and hollow, with moderate friction and very low bounce.",
+    "backend": "live:azure"
+  },
+  "Newspaper_2": {
+    "asset_id": "Newspaper_2",
+    "mass_kg": {
+      "mean": 0.2,
+      "low": 0.15,
+      "high": 0.3
+    },
+    "static_friction": {
+      "mean": 0.4,
+      "low": 0.3,
+      "high": 0.5
+    },
+    "restitution": {
+      "mean": 0.2,
+      "low": 0.1,
+      "high": 0.3
+    },
+    "reasoning": "The object is a rolled-up newspaper made of lightweight paper, hollow in the center, with moderate friction and low elasticity.",
+    "backend": "live:azure"
+  },
+  "Newspaper_3": {
+    "asset_id": "Newspaper_3",
+    "mass_kg": {
+      "mean": 0.2,
+      "low": 0.15,
+      "high": 0.3
+    },
+    "static_friction": {
+      "mean": 0.4,
+      "low": 0.3,
+      "high": 0.5
+    },
+    "restitution": {
+      "mean": 0.2,
+      "low": 0.1,
+      "high": 0.3
+    },
+    "reasoning": "The object is a rolled-up newspaper made of lightweight paper, hollow in the center, and light for its size.",
+    "backend": "live:azure"
+  },
+  "Newspaper_4": {
+    "asset_id": "Newspaper_4",
+    "mass_kg": {
+      "mean": 0.2,
+      "low": 0.1,
+      "high": 0.3
+    },
+    "static_friction": {
+      "mean": 0.4,
+      "low": 0.3,
+      "high": 0.5
+    },
+    "restitution": {
+      "mean": 0.1,
+      "low": 0.0,
+      "high": 0.2
+    },
+    "reasoning": "The object is a folded newspaper made of thin paper, light and hollow, with moderate friction and low bounce.",
+    "backend": "live:azure"
+  },
+  "Newspaper_5": {
+    "asset_id": "Newspaper_5",
+    "mass_kg": {
+      "mean": 0.1,
+      "low": 0.05,
+      "high": 0.2
+    },
+    "static_friction": {
+      "mean": 0.4,
+      "low": 0.3,
+      "high": 0.5
+    },
+    "restitution": {
+      "mean": 0.1,
+      "low": 0.05,
+      "high": 0.2
+    },
+    "reasoning": "The object is a folded newspaper made of thin paper, lightweight, hollow, and flexible.",
+    "backend": "live:azure"
+  },
+  "Room_Decor_1_1": {
+    "asset_id": "Room_Decor_1_1",
+    "mass_kg": {
+      "mean": 0.5,
+      "low": 0.3,
+      "high": 0.8
+    },
+    "static_friction": {
+      "mean": 0.4,
+      "low": 0.3,
+      "high": 0.6
+    },
+    "restitution": {
+      "mean": 0.3,
+      "low": 0.2,
+      "high": 0.4
+    },
+    "reasoning": "The object resembles a dense pod-like structure with lightweight extensions, likely made of wood, ceramic, or resin, and is small and moderately dense.",
+    "backend": "live:azure"
+  },
+  "Room_Decor_1_2": {
+    "asset_id": "Room_Decor_1_2",
+    "mass_kg": {
+      "mean": 0.5,
+      "low": 0.3,
+      "high": 1.0
+    },
+    "static_friction": {
+      "mean": 0.4,
+      "low": 0.2,
+      "high": 0.6
+    },
+    "restitution": {
+      "mean": 0.3,
+      "low": 0.2,
+      "high": 0.5
+    },
+    "reasoning": "The object resembles a jellyfish-like structure with a hollow main body and lightweight tendrils, likely made of plastic, ceramic, or metal, with moderate friction and low bounce properties.",
+    "backend": "live:azure"
+  },
+  "Dog_Statue_1": {
+    "asset_id": "Dog_Statue_1",
+    "mass_kg": {
+      "mean": 0.2,
+      "low": 0.1,
+      "high": 0.4
+    },
+    "static_friction": {
+      "mean": 0.6,
+      "low": 0.4,
+      "high": 0.8
+    },
+    "restitution": {
+      "mean": 0.5,
+      "low": 0.3,
+      "high": 0.7
+    },
+    "reasoning": "The object appears to be a small, lightweight figurine made of rubber or plastic, with moderate friction and bounce characteristics.",
+    "backend": "live:azure"
+  },
+  "Dog_Statue_2": {
+    "asset_id": "Dog_Statue_2",
+    "mass_kg": {
+      "mean": 2.0,
+      "low": 1.5,
+      "high": 3.0
+    },
+    "static_friction": {
+      "mean": 0.8,
+      "low": 0.6,
+      "high": 1.0
+    },
+    "restitution": {
+      "mean": 0.4,
+      "low": 0.3,
+      "high": 0.5
+    },
+    "reasoning": "The object resembles a stylized animal, likely made of rubber or resin, approximately 30\u201350 cm long, solid and moderately dense for its size.",
+    "backend": "live:azure"
+  },
+  "Dog_Statue_3": {
+    "asset_id": "Dog_Statue_3",
+    "mass_kg": {
+      "mean": 0.5,
+      "low": 0.3,
+      "high": 0.8
+    },
+    "static_friction": {
+      "mean": 0.6,
+      "low": 0.4,
+      "high": 0.8
+    },
+    "restitution": {
+      "mean": 0.5,
+      "low": 0.3,
+      "high": 0.7
+    },
+    "reasoning": "The object resembles a stylized animal-like figure, likely made of plastic or rubber, approximately 20\u201340 cm in length, hollow or semi-solid, and light for its size.",
+    "backend": "live:azure"
+  },
+  "Dog_Statue_4": {
+    "asset_id": "Dog_Statue_4",
+    "mass_kg": {
+      "mean": 20.0,
+      "low": 15.0,
+      "high": 30.0
+    },
+    "static_friction": {
+      "mean": 0.7,
+      "low": 0.5,
+      "high": 1.0
+    },
+    "restitution": {
+      "mean": 0.2,
+      "low": 0.1,
+      "high": 0.3
+    },
+    "reasoning": "The object appears to be a dense, solid sculpture resembling an animal, likely made of stone or concrete, with low bounce and moderate friction.",
+    "backend": "live:azure"
+  },
+  "Fertility_Statue_1": {
+    "asset_id": "Fertility_Statue_1",
+    "mass_kg": {
+      "mean": 2.3608223915186586,
+      "low": 1.416493434911195,
+      "high": 3.777315826429854
+    },
+    "static_friction": {
+      "mean": 1.046661307235061,
+      "low": 0.8466613072350611,
+      "high": 1.246661307235061
+    },
+    "restitution": {
+      "mean": 0.36527259608324325,
+      "low": 0.21527259608324326,
+      "high": 0.5152725960832433
+    },
+    "reasoning": "mock (offline) attribution",
+    "backend": "mock"
+  },
+  "Fertility_Statue_2": {
+    "asset_id": "Fertility_Statue_2",
+    "mass_kg": {
+      "mean": 2.3608223915186586,
+      "low": 1.416493434911195,
+      "high": 3.777315826429854
+    },
+    "static_friction": {
+      "mean": 0.3892108452348305,
+      "low": 0.1892108452348305,
+      "high": 0.5892108452348306
+    },
+    "restitution": {
+      "mean": 0.3391106806833705,
+      "low": 0.18911068068337053,
+      "high": 0.4891106806833705
+    },
+    "reasoning": "mock (offline) attribution",
+    "backend": "mock"
+  },
+  "Fertility_Statue_3": {
+    "asset_id": "Fertility_Statue_3",
+    "mass_kg": {
+      "mean": 50.0,
+      "low": 50.0,
+      "high": 50.0
+    },
+    "static_friction": {
+      "mean": 0.4,
+      "low": 0.3,
+      "high": 0.5
+    },
+    "restitution": {
+      "mean": 0.6,
+      "low": 0.5,
+      "high": 0.7
+    },
+    "reasoning": "The object is a large, solid, rectangular block likely made of steel, with dimensions similar to a human figure, suggesting high mass, moderate friction, and moderate restitution.",
+    "backend": "live:azure"
+  },
+  "Hand_Statue_1": {
+    "asset_id": "Hand_Statue_1",
+    "mass_kg": {
+      "mean": 0.5,
+      "low": 0.3,
+      "high": 0.8
+    },
+    "static_friction": {
+      "mean": 0.4,
+      "low": 0.3,
+      "high": 0.6
+    },
+    "restitution": {
+      "mean": 0.3,
+      "low": 0.2,
+      "high": 0.5
+    },
+    "reasoning": "The object resembles a sculpted hand, likely made of plastic, resin, or plaster, with dimensions similar to a human hand and moderate density.",
+    "backend": "live:azure"
+  },
+  "Hand_Statue_2": {
+    "asset_id": "Hand_Statue_2",
+    "mass_kg": {
+      "mean": 1.5,
+      "low": 1.0,
+      "high": 2.5
+    },
+    "static_friction": {
+      "mean": 0.6,
+      "low": 0.4,
+      "high": 0.8
+    },
+    "restitution": {
+      "mean": 0.3,
+      "low": 0.2,
+      "high": 0.4
+    },
+    "reasoning": "The object is a sculpted hand, likely solid and made of plaster, resin, or stone, with moderate density and typical physical properties for such materials.",
+    "backend": "live:azure"
+  },
+  "Hand_Statue_3": {
+    "asset_id": "Hand_Statue_3",
+    "mass_kg": {
+      "mean": 0.5,
+      "low": 0.3,
+      "high": 0.8
+    },
+    "static_friction": {
+      "mean": 0.4,
+      "low": 0.3,
+      "high": 0.5
+    },
+    "restitution": {
+      "mean": 0.3,
+      "low": 0.2,
+      "high": 0.4
+    },
+    "reasoning": "The object is a sculpted hand likely made of resin, plaster, or plastic, approximately the size of a human hand, solid and moderately dense.",
+    "backend": "live:azure"
+  },
+  "Stone_Statue_1": {
+    "asset_id": "Stone_Statue_1",
+    "mass_kg": {
+      "mean": 2.5,
+      "low": 2.0,
+      "high": 3.0
+    },
+    "static_friction": {
+      "mean": 0.4,
+      "low": 0.3,
+      "high": 0.5
+    },
+    "restitution": {
+      "mean": 0.3,
+      "low": 0.2,
+      "high": 0.4
+    },
+    "reasoning": "The object resembles a mallet or hammer-like tool, likely made of wood, with moderate size and density.",
+    "backend": "live:azure"
+  },
+  "Stone_Statue_2": {
+    "asset_id": "Stone_Statue_2",
+    "mass_kg": {
+      "mean": 0.5,
+      "low": 0.3,
+      "high": 0.8
+    },
+    "static_friction": {
+      "mean": 0.6,
+      "low": 0.4,
+      "high": 0.8
+    },
+    "restitution": {
+      "mean": 0.5,
+      "low": 0.3,
+      "high": 0.7
+    },
+    "reasoning": "The object is likely a small, lightweight item made of plastic or rubber, approximately 20\u201330 cm in length, hollow or semi-solid, with moderate friction and bounce characteristics.",
+    "backend": "live:azure"
+  },
+  "Stone_Statue_3": {
+    "asset_id": "Stone_Statue_3",
+    "mass_kg": {
+      "mean": 1.5,
+      "low": 1.0,
+      "high": 2.0
+    },
+    "static_friction": {
+      "mean": 0.4,
+      "low": 0.3,
+      "high": 0.5
+    },
+    "restitution": {
+      "mean": 0.3,
+      "low": 0.2,
+      "high": 0.4
+    },
+    "reasoning": "The object resembles a wooden mallet or hammer, likely solid and moderately dense, with typical friction and restitution properties for wood.",
+    "backend": "live:azure"
+  },
+  "Stone_Statue_4": {
+    "asset_id": "Stone_Statue_4",
+    "mass_kg": {
+      "mean": 2.0,
+      "low": 1.5,
+      "high": 3.0
+    },
+    "static_friction": {
+      "mean": 0.5,
+      "low": 0.4,
+      "high": 0.6
+    },
+    "restitution": {
+      "mean": 0.3,
+      "low": 0.2,
+      "high": 0.4
+    },
+    "reasoning": "The object resembles a mallet or club, likely made of wood or a dense composite material, with moderate size and density.",
+    "backend": "live:azure"
+  },
+  "Towel_Statue_1": {
+    "asset_id": "Towel_Statue_1",
+    "mass_kg": {
+      "mean": 10.0,
+      "low": 5.0,
+      "high": 20.0
+    },
+    "static_friction": {
+      "mean": 0.6,
+      "low": 0.4,
+      "high": 0.8
+    },
+    "restitution": {
+      "mean": 0.3,
+      "low": 0.2,
+      "high": 0.5
+    },
+    "reasoning": "The object is a dense statue or figurine, likely made of bronze, resin, or wood, approximately 0.5\u20131 meter in length, solid and dense for its size.",
+    "backend": "live:azure"
+  },
+  "Towel_Statue_2": {
+    "asset_id": "Towel_Statue_2",
+    "mass_kg": {
+      "mean": 2.0,
+      "low": 1.5,
+      "high": 3.0
+    },
+    "static_friction": {
+      "mean": 0.4,
+      "low": 0.3,
+      "high": 0.5
+    },
+    "restitution": {
+      "mean": 0.3,
+      "low": 0.2,
+      "high": 0.4
+    },
+    "reasoning": "The object is a solid metal figurine, likely brass or bronze, approximately 20\u201330 cm tall and dense for its size.",
+    "backend": "live:azure"
+  },
+  "Towel_Statue_3": {
+    "asset_id": "Towel_Statue_3",
+    "mass_kg": {
+      "mean": 3.0,
+      "low": 2.0,
+      "high": 5.0
+    },
+    "static_friction": {
+      "mean": 0.5,
+      "low": 0.4,
+      "high": 0.6
+    },
+    "restitution": {
+      "mean": 0.3,
+      "low": 0.2,
+      "high": 0.4
+    },
+    "reasoning": "The object is a dense statue or figurine with a circular base, likely made of metal or resin, approximately 30\u201350 cm tall and solid.",
+    "backend": "live:azure"
+  },
+  "Waving_Statue_1": {
+    "asset_id": "Waving_Statue_1",
+    "mass_kg": {
+      "mean": 20.0,
+      "low": 15.0,
+      "high": 30.0
+    },
+    "static_friction": {
+      "mean": 0.5,
+      "low": 0.4,
+      "high": 0.6
+    },
+    "restitution": {
+      "mean": 0.2,
+      "low": 0.1,
+      "high": 0.3
+    },
+    "reasoning": "The object is a flat rectangular panel, likely solid and made of wood, composite, or metal, with moderate size and density.",
+    "backend": "live:azure"
+  },
+  "Waving_Statue_2": {
+    "asset_id": "Waving_Statue_2",
+    "mass_kg": {
+      "mean": 25.0,
+      "low": 20.0,
+      "high": 30.0
+    },
+    "static_friction": {
+      "mean": 0.4,
+      "low": 0.3,
+      "high": 0.5
+    },
+    "restitution": {
+      "mean": 0.3,
+      "low": 0.2,
+      "high": 0.4
+    },
+    "reasoning": "The object is a dense, solid rectangular panel, likely made of metal or hard plastic, approximately 1 meter in size, with significant mass and moderate friction and restitution properties.",
+    "backend": "live:azure"
+  },
+  "Waving_Statue_3": {
+    "asset_id": "Waving_Statue_3",
+    "mass_kg": {
+      "mean": 25.0,
+      "low": 15.0,
+      "high": 40.0
+    },
+    "static_friction": {
+      "mean": 0.6,
+      "low": 0.4,
+      "high": 0.8
+    },
+    "restitution": {
+      "mean": 0.3,
+      "low": 0.2,
+      "high": 0.5
+    },
+    "reasoning": "The object is a rectangular black panel, likely solid and made of a dense material such as metal or composite, with dimensions approximately 1m x 0.5m x 0.05m.",
+    "backend": "live:azure"
+  },
+  "Tabletop_Decor_1_1": {
+    "asset_id": "Tabletop_Decor_1_1",
+    "mass_kg": {
+      "mean": 0.2,
+      "low": 0.1,
+      "high": 0.4
+    },
+    "static_friction": {
+      "mean": 0.3,
+      "low": 0.2,
+      "high": 0.4
+    },
+    "restitution": {
+      "mean": 0.5,
+      "low": 0.4,
+      "high": 0.6
+    },
+    "reasoning": "The object is a lightweight, hollow, bowl-like structure likely made of plastic, with low mass, moderate friction, and moderate bounce properties.",
+    "backend": "live:azure"
+  },
+  "Teddy_Bear_1": {
+    "asset_id": "Teddy_Bear_1",
+    "mass_kg": {
+      "mean": 0.5,
+      "low": 0.3,
+      "high": 0.8
+    },
+    "static_friction": {
+      "mean": 0.8,
+      "low": 0.6,
+      "high": 1.0
+    },
+    "restitution": {
+      "mean": 0.5,
+      "low": 0.3,
+      "high": 0.7
+    },
+    "reasoning": "The object is a small, solid, stylized animal figure likely made of rubber, plastic, or clay, with moderate mass, friction, and restitution properties.",
+    "backend": "live:azure"
+  },
+  "Teddy_Bear_2": {
+    "asset_id": "Teddy_Bear_2",
+    "mass_kg": {
+      "mean": 0.3,
+      "low": 0.2,
+      "high": 0.5
+    },
+    "static_friction": {
+      "mean": 1.0,
+      "low": 0.8,
+      "high": 1.2
+    },
+    "restitution": {
+      "mean": 0.2,
+      "low": 0.1,
+      "high": 0.3
+    },
+    "reasoning": "The object is a lightweight stuffed toy resembling a panda, made of fabric and soft stuffing material, with moderate friction and low bounce properties.",
+    "backend": "live:azure"
+  },
+  "Tennis_Racquet_1": {
+    "asset_id": "Tennis_Racquet_1",
+    "mass_kg": {
+      "mean": 0.35,
+      "low": 0.3,
+      "high": 0.4
+    },
+    "static_friction": {
+      "mean": 0.5,
+      "low": 0.4,
+      "high": 0.6
+    },
+    "restitution": {
+      "mean": 0.4,
+      "low": 0.3,
+      "high": 0.5
+    },
+    "reasoning": "The object is a tennis racket made of metal/composite frame, synthetic strings, and rubber grip, with moderate mass, friction, and restitution properties.",
+    "backend": "live:azure"
+  },
+  "Tennis_Racquet_2": {
+    "asset_id": "Tennis_Racquet_2",
+    "mass_kg": {
+      "mean": 0.4,
+      "low": 0.3,
+      "high": 0.5
+    },
+    "static_friction": {
+      "mean": 0.8,
+      "low": 0.6,
+      "high": 1.0
+    },
+    "restitution": {
+      "mean": 0.5,
+      "low": 0.4,
+      "high": 0.6
+    },
+    "reasoning": "The object is a tennis racket, likely made of metal/composite materials with a rubber grip and nylon strings, lightweight and rigid.",
+    "backend": "live:azure"
+  },
+  "Tennis_Racquet_3": {
+    "asset_id": "Tennis_Racquet_3",
+    "mass_kg": {
+      "mean": 0.3,
+      "low": 0.25,
+      "high": 0.35
+    },
+    "static_friction": {
+      "mean": 0.4,
+      "low": 0.3,
+      "high": 0.5
+    },
+    "restitution": {
+      "mean": 0.5,
+      "low": 0.4,
+      "high": 0.6
+    },
+    "reasoning": "The object is a tennis racket, typically made of wood or synthetic material for the handle, metal or composite for the frame, and nylon/polyester for the mesh. It is hollow in parts, lightweight, and moderately elastic.",
+    "backend": "live:azure"
+  },
+  "Tennis_Racquet_4": {
+    "asset_id": "Tennis_Racquet_4",
+    "mass_kg": {
+      "mean": 0.35,
+      "low": 0.3,
+      "high": 0.4
+    },
+    "static_friction": {
+      "mean": 0.5,
+      "low": 0.4,
+      "high": 0.6
+    },
+    "restitution": {
+      "mean": 0.4,
+      "low": 0.3,
+      "high": 0.5
+    },
+    "reasoning": "The object is a tennis racket made of lightweight materials, with typical dimensions and physical properties for its intended use.",
+    "backend": "live:azure"
+  },
+  "Tennis_Racquet_5": {
+    "asset_id": "Tennis_Racquet_5",
+    "mass_kg": {
+      "mean": 0.35,
+      "low": 0.3,
+      "high": 0.4
+    },
+    "static_friction": {
+      "mean": 0.6,
+      "low": 0.5,
+      "high": 0.7
+    },
+    "restitution": {
+      "mean": 0.5,
+      "low": 0.4,
+      "high": 0.6
+    },
+    "reasoning": "The object is a tennis racket, lightweight and hollow, with moderate friction and restitution properties.",
+    "backend": "live:azure"
+  },
+  "Tissue_Box_1": {
+    "asset_id": "Tissue_Box_1",
+    "mass_kg": {
+      "mean": 12.0,
+      "low": 8.0,
+      "high": 15.0
+    },
+    "static_friction": {
+      "mean": 0.6,
+      "low": 0.4,
+      "high": 0.8
+    },
+    "restitution": {
+      "mean": 0.3,
+      "low": 0.2,
+      "high": 0.4
+    },
+    "reasoning": "The object is a dense, solid rectangular prism likely made of metal, with dimensions suggesting a weight of several kilograms and physical properties typical of metal blocks.",
+    "backend": "live:azure"
+  },
+  "Vase_Decorative_1": {
+    "asset_id": "Vase_Decorative_1",
+    "mass_kg": {
+      "mean": 0.8,
+      "low": 0.5,
+      "high": 1.2
+    },
+    "static_friction": {
+      "mean": 0.4,
+      "low": 0.3,
+      "high": 0.5
+    },
+    "restitution": {
+      "mean": 0.3,
+      "low": 0.2,
+      "high": 0.5
+    },
+    "reasoning": "The object resembles a hollow bottle-like or vase-like shape, likely made of ceramic, glass, or plastic, with moderate size and weight.",
+    "backend": "live:azure"
+  },
+  "Vase_Flat_1": {
+    "asset_id": "Vase_Flat_1",
+    "mass_kg": {
+      "mean": 1.0,
+      "low": 0.3,
+      "high": 2.0
+    },
+    "static_friction": {
+      "mean": 0.4,
+      "low": 0.2,
+      "high": 0.6
+    },
+    "restitution": {
+      "mean": 0.3,
+      "low": 0.2,
+      "high": 0.5
+    },
+    "reasoning": "The object is likely a solid disk-like component made of metal or hard plastic, approximately 10\u201320 cm in diameter and 2\u20135 cm thick, with a mass between 0.3 and 2.0 kg, moderate friction, and low bounce.",
+    "backend": "live:azure"
+  },
+  "Vase_Flat_2": {
+    "asset_id": "Vase_Flat_2",
+    "mass_kg": {
+      "mean": 0.2,
+      "low": 0.1,
+      "high": 0.4
+    },
+    "static_friction": {
+      "mean": 0.4,
+      "low": 0.3,
+      "high": 0.5
+    },
+    "restitution": {
+      "mean": 0.5,
+      "low": 0.4,
+      "high": 0.6
+    },
+    "reasoning": "The object resembles a lightweight, hollow plastic or metal disk with a protrusion, likely around 10\u201315 cm in diameter and light for its size.",
+    "backend": "live:azure"
+  },
+  "Vase_Flat_3": {
+    "asset_id": "Vase_Flat_3",
+    "mass_kg": {
+      "mean": 0.2,
+      "low": 0.1,
+      "high": 0.4
+    },
+    "static_friction": {
+      "mean": 0.8,
+      "low": 0.6,
+      "high": 1.0
+    },
+    "restitution": {
+      "mean": 0.5,
+      "low": 0.3,
+      "high": 0.7
+    },
+    "reasoning": "The object is likely a rubber or plastic disc with a cylindrical protrusion, light and small, with moderate friction and bounce properties.",
+    "backend": "live:azure"
+  },
+  "Vase_Flat_4": {
+    "asset_id": "Vase_Flat_4",
+    "mass_kg": {
+      "mean": 0.4,
+      "low": 0.2,
+      "high": 0.8
+    },
+    "static_friction": {
+      "mean": 0.3,
+      "low": 0.2,
+      "high": 0.4
+    },
+    "restitution": {
+      "mean": 0.5,
+      "low": 0.4,
+      "high": 0.6
+    },
+    "reasoning": "The object is likely a hollow plastic or lightweight metal disk with a protruding cylindrical feature, approximately 10\u201320 cm in diameter, light for its size, with moderate friction and bounce properties.",
+    "backend": "live:azure"
+  },
+  "Vase_Flat_5": {
+    "asset_id": "Vase_Flat_5",
+    "mass_kg": {
+      "mean": 0.5,
+      "low": 0.2,
+      "high": 0.8
+    },
+    "static_friction": {
+      "mean": 0.4,
+      "low": 0.2,
+      "high": 0.6
+    },
+    "restitution": {
+      "mean": 0.5,
+      "low": 0.3,
+      "high": 0.7
+    },
+    "reasoning": "The object is a disk-like shape with a protruding cylindrical feature, likely made of metal or plastic, approximately 10\u201315 cm in diameter, solid, and moderately dense.",
+    "backend": "live:azure"
+  },
+  "Vase_Medium_1": {
+    "asset_id": "Vase_Medium_1",
+    "mass_kg": {
+      "mean": 0.5,
+      "low": 0.2,
+      "high": 1.0
+    },
+    "static_friction": {
+      "mean": 0.3,
+      "low": 0.2,
+      "high": 0.4
+    },
+    "restitution": {
+      "mean": 0.4,
+      "low": 0.3,
+      "high": 0.5
+    },
+    "reasoning": "The object is a hollow, smooth-surfaced flask-like structure likely made of plastic, glass, or metal, with moderate size and weight.",
+    "backend": "live:azure"
+  },
+  "Vase_Medium_2": {
+    "asset_id": "Vase_Medium_2",
+    "mass_kg": {
+      "mean": 0.2,
+      "low": 0.1,
+      "high": 0.3
+    },
+    "static_friction": {
+      "mean": 0.5,
+      "low": 0.4,
+      "high": 0.6
+    },
+    "restitution": {
+      "mean": 0.5,
+      "low": 0.4,
+      "high": 0.6
+    },
+    "reasoning": "The object is a hollow funnel-like structure likely made of plastic or rubber, lightweight for its size, with moderate friction and bounce properties.",
+    "backend": "live:azure"
+  },
+  "Vase_Medium_3": {
+    "asset_id": "Vase_Medium_3",
+    "mass_kg": {
+      "mean": 0.2,
+      "low": 0.1,
+      "high": 0.4
+    },
+    "static_friction": {
+      "mean": 0.5,
+      "low": 0.4,
+      "high": 0.6
+    },
+    "restitution": {
+      "mean": 0.4,
+      "low": 0.3,
+      "high": 0.5
+    },
+    "reasoning": "The object is a hollow funnel-like shape likely made of plastic or rubber, lightweight and moderately bouncy.",
+    "backend": "live:azure"
+  },
+  "Vase_Medium_4": {
+    "asset_id": "Vase_Medium_4",
+    "mass_kg": {
+      "mean": 0.2,
+      "low": 0.1,
+      "high": 0.3
+    },
+    "static_friction": {
+      "mean": 0.4,
+      "low": 0.3,
+      "high": 0.5
+    },
+    "restitution": {
+      "mean": 0.5,
+      "low": 0.4,
+      "high": 0.6
+    },
+    "reasoning": "The object is a hollow, lightweight funnel likely made of plastic or rubber, with dimensions around 10\u201320 cm for the rounded body and 5\u201310 cm for the neck.",
+    "backend": "live:azure"
+  },
+  "Vase_Medium_5": {
+    "asset_id": "Vase_Medium_5",
+    "mass_kg": {
+      "mean": 0.2,
+      "low": 0.1,
+      "high": 0.4
+    },
+    "static_friction": {
+      "mean": 0.5,
+      "low": 0.4,
+      "high": 0.6
+    },
+    "restitution": {
+      "mean": 0.6,
+      "low": 0.4,
+      "high": 0.8
+    },
+    "reasoning": "The object is likely a hollow, lightweight plastic or rubber funnel-shaped item, approximately 10\u201320 cm in size, with moderate friction and bounce properties.",
+    "backend": "live:azure"
+  },
+  "Vase_Open_1": {
+    "asset_id": "Vase_Open_1",
+    "mass_kg": {
+      "mean": 0.5,
+      "low": 0.3,
+      "high": 0.8
+    },
+    "static_friction": {
+      "mean": 0.4,
+      "low": 0.3,
+      "high": 0.5
+    },
+    "restitution": {
+      "mean": 0.3,
+      "low": 0.2,
+      "high": 0.5
+    },
+    "reasoning": "The object is a hollow, rounded container likely made of plastic, glass, or ceramic, with medium size and moderate weight.",
+    "backend": "live:azure"
+  },
+  "Vase_Open_2": {
+    "asset_id": "Vase_Open_2",
+    "mass_kg": {
+      "mean": 0.5,
+      "low": 0.3,
+      "high": 1.0
+    },
+    "static_friction": {
+      "mean": 0.4,
+      "low": 0.2,
+      "high": 0.6
+    },
+    "restitution": {
+      "mean": 0.5,
+      "low": 0.3,
+      "high": 0.7
+    },
+    "reasoning": "The object appears to be a hollow, smooth capsule-like structure made of plastic or metal, approximately the size of a small bowl, and relatively light for its size.",
+    "backend": "live:azure"
+  },
+  "Vase_Open_3": {
+    "asset_id": "Vase_Open_3",
+    "mass_kg": {
+      "mean": 0.5,
+      "low": 0.3,
+      "high": 0.8
+    },
+    "static_friction": {
+      "mean": 0.3,
+      "low": 0.2,
+      "high": 0.4
+    },
+    "restitution": {
+      "mean": 0.5,
+      "low": 0.4,
+      "high": 0.6
+    },
+    "reasoning": "The object is a hollow, rounded structure likely made of plastic or thin metal, with a size comparable to a small container and light for its size.",
+    "backend": "live:azure"
+  },
+  "Vase_Tall_1": {
+    "asset_id": "Vase_Tall_1",
+    "mass_kg": {
+      "mean": 0.2,
+      "low": 0.1,
+      "high": 0.5
+    },
+    "static_friction": {
+      "mean": 0.4,
+      "low": 0.3,
+      "high": 0.6
+    },
+    "restitution": {
+      "mean": 0.5,
+      "low": 0.3,
+      "high": 0.7
+    },
+    "reasoning": "The object resembles a small hollow container, likely made of plastic, with dimensions around 10\u201320 cm and light mass.",
+    "backend": "live:azure"
+  },
+  "Vase_Tall_2": {
+    "asset_id": "Vase_Tall_2",
+    "mass_kg": {
+      "mean": 0.2,
+      "low": 0.1,
+      "high": 0.3
+    },
+    "static_friction": {
+      "mean": 0.9,
+      "low": 0.8,
+      "high": 1.0
+    },
+    "restitution": {
+      "mean": 0.6,
+      "low": 0.5,
+      "high": 0.7
+    },
+    "reasoning": "The object resembles a rubber bulb, likely hollow, lightweight, and made of rubber or similar material.",
+    "backend": "live:azure"
+  },
+  "Vase_Tall_3": {
+    "asset_id": "Vase_Tall_3",
+    "mass_kg": {
+      "mean": 0.2,
+      "low": 0.1,
+      "high": 0.3
+    },
+    "static_friction": {
+      "mean": 0.8,
+      "low": 0.6,
+      "high": 1.0
+    },
+    "restitution": {
+      "mean": 0.5,
+      "low": 0.4,
+      "high": 0.6
+    },
+    "reasoning": "The object resembles a hollow rubber air blower or pipette bulb, lightweight and made of rubber-like material.",
+    "backend": "live:azure"
+  },
+  "Vase_Tall_4": {
+    "asset_id": "Vase_Tall_4",
+    "mass_kg": {
+      "mean": 0.2,
+      "low": 0.1,
+      "high": 0.3
+    },
+    "static_friction": {
+      "mean": 0.5,
+      "low": 0.4,
+      "high": 0.6
+    },
+    "restitution": {
+      "mean": 0.55,
+      "low": 0.5,
+      "high": 0.6
+    },
+    "reasoning": "The object is likely a hollow plastic funnel or vessel, lightweight and smooth, with moderate friction and bounce properties typical of plastic.",
+    "backend": "live:azure"
+  },
+  "Vase_Tall_5": {
+    "asset_id": "Vase_Tall_5",
+    "mass_kg": {
+      "mean": 0.2,
+      "low": 0.1,
+      "high": 0.4
+    },
+    "static_friction": {
+      "mean": 0.6,
+      "low": 0.4,
+      "high": 0.8
+    },
+    "restitution": {
+      "mean": 0.5,
+      "low": 0.3,
+      "high": 0.7
+    },
+    "reasoning": "The object is likely a hollow, lightweight plastic or rubber bulb with a narrow stem, resembling a small flask or balloon.",
+    "backend": "live:azure"
+  },
+  "Watch_1": {
+    "asset_id": "Watch_1",
+    "mass_kg": {
+      "mean": 0.1,
+      "low": 0.08,
+      "high": 0.15
+    },
+    "static_friction": {
+      "mean": 0.6,
+      "low": 0.5,
+      "high": 0.7
+    },
+    "restitution": {
+      "mean": 0.3,
+      "low": 0.2,
+      "high": 0.4
+    },
+    "reasoning": "The object is a wristwatch made of metal, glass, and leather/synthetic materials, light and mostly solid, with moderate friction and low bounce.",
+    "backend": "live:azure"
+  },
+  "Watch_2": {
+    "asset_id": "Watch_2",
+    "mass_kg": {
+      "mean": 0.1,
+      "low": 0.08,
+      "high": 0.15
+    },
+    "static_friction": {
+      "mean": 0.4,
+      "low": 0.3,
+      "high": 0.5
+    },
+    "restitution": {
+      "mean": 0.3,
+      "low": 0.2,
+      "high": 0.4
+    },
+    "reasoning": "The object is a wristwatch with a metallic case and leather strap, light and compact with minimal bounce and moderate friction.",
+    "backend": "live:azure"
+  },
+  "Watering_Can_1": {
+    "asset_id": "Watering_Can_1",
+    "mass_kg": {
+      "mean": 0.5,
+      "low": 0.3,
+      "high": 0.8
+    },
+    "static_friction": {
+      "mean": 0.4,
+      "low": 0.3,
+      "high": 0.6
+    },
+    "restitution": {
+      "mean": 0.4,
+      "low": 0.3,
+      "high": 0.5
+    },
+    "reasoning": "The object is a small, hollow or semi-hollow decorative item likely made of ceramic or plastic, with moderate mass, friction, and bounce properties.",
+    "backend": "live:azure"
+  }
+}
