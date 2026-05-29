@@ -128,7 +128,8 @@ class PhinoDataGenerator:
             seed=seed,
         )
 
-    def generate_all(self, compute_similarity: bool = True, max_sim_pairs: int = 500000):
+    def generate_all(self, compute_similarity: bool = True, max_sim_pairs: int = 500000,
+                     keep_renders: bool = False):
         from train.data.assets import discover_assets, render_multiview
 
         logger.info("=== PHINO data generation (GPT-4o + MuJoCo) ===")
@@ -143,6 +144,7 @@ class PhinoDataGenerator:
 
         metadata: List[dict] = []
         fingerprints: List[np.ndarray] = []
+        attributions: dict = {}  # asset_id -> GPT attribution (consolidated)
         image_group = 0  # one group per successfully-processed asset
 
         for rec in records:
@@ -159,6 +161,9 @@ class PhinoDataGenerator:
                 attr = self.attributor.attribute(
                     rec.asset_id, image_paths=views, mass_hint=mass_hint,
                 )
+                attributions[rec.asset_id] = attr.to_dict()
+                attr_path = str(self.output_dir / "attribution"
+                                / f"{_safe(rec.asset_id)}.json")
 
                 # 3-4. sample N physics configs, simulate trajectories
                 for _ in range(self.num_physics):
@@ -177,9 +182,12 @@ class PhinoDataGenerator:
                     fingerprints.append(flat)
                     metadata.append({
                         "image_path": str(img_path),
+                        "view_paths": views,
                         "category": rec.category,
                         "material": rec.category,
                         "asset_id": rec.asset_id,
+                        "mjcf_path": rec.mjcf_path,
+                        "attribution_path": attr_path,
                         "global_idx": gidx,
                         "image_group": image_group,
                         "physics_uid": physics.uid,
@@ -200,12 +208,25 @@ class PhinoDataGenerator:
 
         with open(self.output_dir / "metadata.json", "w") as f:
             json.dump(metadata, f)
+        # Consolidated GPT attributions, keyed by asset_id (one row per asset).
+        with open(self.output_dir / "attributions.json", "w") as f:
+            json.dump(attributions, f, indent=2)
         logger.info(f"Saved metadata for {len(metadata)} entries "
-                    f"({image_group} assets x {self.num_physics} physics)")
+                    f"({image_group} assets x {self.num_physics} physics); "
+                    f"attributions for {len(attributions)} assets")
 
         if compute_similarity:
             self._compute_similarity_matrix(fingerprints, max_pairs=max_sim_pairs)
         self._generate_invisible_physics_testset(metadata, fingerprints)
+
+        # Renders are a regenerable cache (GPT attribution is the durable artifact);
+        # delete them unless asked to keep. Re-create the DINO training images later
+        # with `scripts/render_images.py` (reads metadata.json -> renders v0).
+        if not keep_renders:
+            import shutil
+            shutil.rmtree(img_dir, ignore_errors=True)
+            logger.info(f"Deleted renders at {img_dir}; run scripts/render_images.py "
+                        "before training to regenerate the v0 training images.")
         logger.info("=== Data generation complete ===")
 
     # ----- helpers -------------------------------------------------------

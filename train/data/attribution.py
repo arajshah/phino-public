@@ -41,6 +41,14 @@ import numpy as np
 logger = logging.getLogger(__name__)
 
 
+# Azure OpenAI defaults — only AZURE_OPENAI_API_KEY must be set in the env (it is
+# the secret). Endpoint / api-version / deployment are non-secret and default
+# here; override any of them with the matching AZURE_OPENAI_* env var.
+AZURE_ENDPOINT_DEFAULT = "https://cml-amine.openai.azure.com"
+AZURE_API_VERSION_DEFAULT = "2025-04-01-preview"
+AZURE_DEPLOYMENT_DEFAULT = "gpt-4o"   # cheap vision model; your Azure deployment name
+
+
 # Plausible physical bounds used to clamp predictions (and bound the mock).
 MASS_BOUNDS = (0.01, 50.0)        # kg
 FRICTION_BOUNDS = (0.05, 1.5)     # static friction coefficient
@@ -93,23 +101,10 @@ class AttributionResult:
         )
 
 
-COT_SYSTEM_PROMPT = (
-    "You are a physics expert estimating the physical properties of a single "
-    "object shown in a rendered image. Reason step by step about (1) the most "
-    "likely material(s), (2) the object's real-world size, (3) whether it is "
-    "solid or hollow, then estimate three properties with a plausible "
-    "uncertainty range each:\n"
-    "  - mass_kg: total mass in kilograms\n"
-    "  - static_friction: dimensionless static friction coefficient (~0.05-1.5)\n"
-    "  - restitution: coefficient of restitution / bounciness (0=no bounce, "
-    "~0.9=very bouncy)\n\n"
-    "After your reasoning, output ONE JSON object on its own and nothing after "
-    "it, with this exact schema:\n"
-    '{"reasoning": "<one-sentence summary>", '
-    '"mass_kg": {"mean": <f>, "low": <f>, "high": <f>}, '
-    '"static_friction": {"mean": <f>, "low": <f>, "high": <f>}, '
-    '"restitution": {"mean": <f>, "low": <f>, "high": <f>}}'
-)
+# The chain-of-thought system prompt lives in a standalone text file so it can be
+# edited / version-controlled without touching code.
+PROMPT_PATH = Path(__file__).parent / "prompts" / "physical_attribution_cot.txt"
+COT_SYSTEM_PROMPT = PROMPT_PATH.read_text(encoding="utf-8").strip()
 
 
 class PhysicalAttributor:
@@ -132,8 +127,12 @@ class PhysicalAttributor:
 
     @staticmethod
     def _detect_provider() -> Optional[str]:
-        """Return 'azure' / 'openai' based on which credentials are present."""
-        if os.environ.get("AZURE_OPENAI_API_KEY") and os.environ.get("AZURE_OPENAI_ENDPOINT"):
+        """Return 'azure' / 'openai' based on which credentials are present.
+
+        Azure only needs the secret key in the env — endpoint/version/deployment
+        have defaults (see AZURE_*_DEFAULT above).
+        """
+        if os.environ.get("AZURE_OPENAI_API_KEY"):
             return "azure"
         if os.environ.get("OPENAI_API_KEY"):
             return "openai"
@@ -236,11 +235,14 @@ class PhysicalAttributor:
             from openai import AzureOpenAI
             client = AzureOpenAI(
                 api_key=os.environ["AZURE_OPENAI_API_KEY"],
-                azure_endpoint=os.environ["AZURE_OPENAI_ENDPOINT"],
-                api_version=os.environ.get("AZURE_OPENAI_API_VERSION", "2024-10-21"),
+                azure_endpoint=os.environ.get("AZURE_OPENAI_ENDPOINT", AZURE_ENDPOINT_DEFAULT),
+                api_version=os.environ.get("AZURE_OPENAI_API_VERSION", AZURE_API_VERSION_DEFAULT),
             )
-            # On Azure the `model` arg is the *deployment* name.
-            deployment = os.environ.get("AZURE_OPENAI_DEPLOYMENT", self.model)
+            # On Azure the `model` arg is the *deployment* name. Accept either
+            # AZURE_OPENAI_DEPLOYMENT or AZURE_OPENAI_MODEL (your convention).
+            deployment = (os.environ.get("AZURE_OPENAI_DEPLOYMENT")
+                          or os.environ.get("AZURE_OPENAI_MODEL")
+                          or AZURE_DEPLOYMENT_DEFAULT)
             return client, deployment
         from openai import OpenAI
         client = OpenAI(base_url=os.environ.get("OPENAI_BASE_URL") or None)

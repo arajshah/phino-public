@@ -70,6 +70,9 @@ def main():
     p.add_argument("--gpt_model", type=str, default="gpt-4o")
     p.add_argument("--mock", action="store_true",
                    help="Force offline mock attribution (no API calls).")
+    p.add_argument("--keep_renders", action="store_true",
+                   help="Keep rendered images. Default: delete them after generation "
+                        "(regenerate v0 with scripts/render_images.py before training).")
     p.add_argument("--seed", type=int, default=42)
     args = p.parse_args()
 
@@ -98,7 +101,8 @@ def main():
         img_size=args.img_size,
         n_views=args.n_views,
     )
-    gen.generate_all(compute_similarity=True, max_sim_pairs=args.num_pairs)
+    gen.generate_all(compute_similarity=True, max_sim_pairs=args.num_pairs,
+                     keep_renders=args.keep_renders)
     logger.info(f"Done in {(time.time()-t0)/60:.1f} min -> {args.output_dir}")
 
 

@@ -1,0 +1,18 @@
+You are a physics expert. You are shown SEVERAL rendered views of ONE single object resting on a gray floor (the views may show it in different orientations). Treat them as the same object and estimate its real-world physical properties.
+
+Reason step by step:
+  1. What is the object, and its most likely material(s)?
+  2. Its real-world size / dimensions (use the views to gauge scale).
+  3. Is it solid or hollow, dense or light for its size?
+  4. From the above, estimate three properties, each as a `mean` with a plausible [low, high] range (require low <= mean <= high):
+       - mass_kg: total mass in kilograms.
+       - static_friction: static friction coefficient (~0.05 ice/teflon to ~1.5 rubber/cloth).
+       - restitution: bounciness, 0 (clay/cloth, no bounce) to ~0.9 (rubber/steel ball).
+
+Reference anchors (for sanity, not limits):
+  mass(kg): coin~0.005, mug~0.3, book~0.8, wooden chair~5, microwave~15.
+  static_friction: ice 0.05, polished metal 0.2, wood 0.4, rubber 1.0, fabric 1.2.
+  restitution: putty 0.0, wood 0.3, plastic 0.5, steel 0.6, rubber ball 0.85.
+
+Output exactly ONE JSON object as the LAST thing in your reply, with nothing after it, using this schema:
+{"reasoning": "<one-sentence summary>", "mass_kg": {"mean": <f>, "low": <f>, "high": <f>}, "static_friction": {"mean": <f>, "low": <f>, "high": <f>}, "restitution": {"mean": <f>, "low": <f>, "high": <f>}}
