@@ -1,0 +1,62 @@
+{
+  "Aluminum_Foil_1": {
+    "asset_id": "Aluminum_Foil_1",
+    "mass_kg": {
+      "mean": 5.0,
+      "low": 3.0,
+      "high": 8.0
+    },
+    "static_friction": {
+      "mean": 0.4,
+      "low": 0.3,
+      "high": 0.5
+    },
+    "restitution": {
+      "mean": 0.3,
+      "low": 0.2,
+      "high": 0.4
+    },
+    "reasoning": "The object is a rolled sheet of dense material, likely metal, with dimensions around 1 meter long and 0.1 meters in diameter, hollow when rolled.",
+    "backend": "live:azure"
+  },
+  "Blinds_1": {
+    "asset_id": "Blinds_1",
+    "mass_kg": {
+      "mean": 1.5,
+      "low": 1.0,
+      "high": 2.0
+    },
+    "static_friction": {
+      "mean": 0.8,
+      "low": 0.6,
+      "high": 1.0
+    },
+    "restitution": {
+      "mean": 0.3,
+      "low": 0.2,
+      "high": 0.4
+    },
+    "reasoning": "The object appears to be a rectangular strip, likely made of rubber and plastic/metal, with a textured surface for grip. It is solid, moderately heavy, and has high friction but low bounciness.",
+    "backend": "live:azure"
+  },
+  "Boot_1": {
+    "asset_id": "Boot_1",
+    "mass_kg": {
+      "mean": 2.0,
+      "low": 1.5,
+      "high": 3.0
+    },
+    "static_friction": {
+      "mean": 0.8,
+      "low": 0.6,
+      "high": 1.0
+    },
+    "restitution": {
+      "mean": 0.5,
+      "low": 0.4,
+      "high": 0.6
+    },
+    "reasoning": "The object resembles hollow, leg-shaped molds likely made of plastic or rubber, approximately human-leg-sized, lightweight, and moderately frictional and bouncy.",
+    "backend": "live:azure"
+  }
+}

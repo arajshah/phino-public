@@ -68,6 +68,9 @@ def main():
     p.add_argument("--n_views", type=int, default=4,
                    help="Multi-view renders per asset fed to GPT-4o (view 0 = DINO image).")
     p.add_argument("--gpt_model", type=str, default="gpt-4o")
+    p.add_argument("--attribution_store", type=str, default="attributions/attributions.json",
+                   help="Single shared, git-tracked JSON of GPT attributions (keyed by "
+                        "asset_id). Commit this one file to share with everyone.")
     p.add_argument("--mock", action="store_true",
                    help="Force offline mock attribution (no API calls).")
     p.add_argument("--keep_renders", action="store_true",
@@ -100,6 +103,7 @@ def main():
         gpt_model=args.gpt_model,
         img_size=args.img_size,
         n_views=args.n_views,
+        attribution_store=args.attribution_store,
     )
     gen.generate_all(compute_similarity=True, max_sim_pairs=args.num_pairs,
                      keep_renders=args.keep_renders)

@@ -108,6 +108,7 @@ class PhinoDataGenerator:
         img_size: int = 224,
         n_views: int = 4,
         similarity_metric: str = "mse",
+        attribution_store: str = "attributions/attributions.json",  # single shared json
     ):
         self.output_dir = Path(output_dir)
         self.output_dir.mkdir(parents=True, exist_ok=True)
@@ -120,9 +121,14 @@ class PhinoDataGenerator:
         self.n_views = n_views
         self.sim_fn = SIMILARITY_METRICS.get(similarity_metric, compute_dynamics_similarity_mse)
 
+        # GPT attributions live in ONE shared, git-tracked json file keyed by
+        # asset_id (NOT under the gitignored data/ output). This is the durable,
+        # shareable artifact: commit it and everyone reuses it without re-calling GPT.
+        self.attribution_store = Path(attribution_store)
+
         self.engine = MuJoCoPhysicsEngine()
         self.attributor = PhysicalAttributor(
-            cache_dir=str(self.output_dir / "attribution"),
+            store_path=str(self.attribution_store),
             backend=attribution_backend,
             model=gpt_model,
             seed=seed,
@@ -144,7 +150,6 @@ class PhinoDataGenerator:
 
         metadata: List[dict] = []
         fingerprints: List[np.ndarray] = []
-        attributions: dict = {}  # asset_id -> GPT attribution (consolidated)
         image_group = 0  # one group per successfully-processed asset
 
         for rec in records:
@@ -161,9 +166,6 @@ class PhinoDataGenerator:
                 attr = self.attributor.attribute(
                     rec.asset_id, image_paths=views, mass_hint=mass_hint,
                 )
-                attributions[rec.asset_id] = attr.to_dict()
-                attr_path = str(self.output_dir / "attribution"
-                                / f"{_safe(rec.asset_id)}.json")
 
                 # 3-4. sample N physics configs, simulate trajectories
                 for _ in range(self.num_physics):
@@ -187,7 +189,7 @@ class PhinoDataGenerator:
                         "material": rec.category,
                         "asset_id": rec.asset_id,
                         "mjcf_path": rec.mjcf_path,
-                        "attribution_path": attr_path,
+                        "attribution_store": str(self.attribution_store),
                         "global_idx": gidx,
                         "image_group": image_group,
                         "physics_uid": physics.uid,
@@ -208,12 +210,10 @@ class PhinoDataGenerator:
 
         with open(self.output_dir / "metadata.json", "w") as f:
             json.dump(metadata, f)
-        # Consolidated GPT attributions, keyed by asset_id (one row per asset).
-        with open(self.output_dir / "attributions.json", "w") as f:
-            json.dump(attributions, f, indent=2)
         logger.info(f"Saved metadata for {len(metadata)} entries "
                     f"({image_group} assets x {self.num_physics} physics); "
-                    f"attributions for {len(attributions)} assets")
+                    f"shared attribution store now has {len(self.attributor._store)} "
+                    f"assets at {self.attribution_store}")
 
         if compute_similarity:
             self._compute_similarity_matrix(fingerprints, max_pairs=max_sim_pairs)

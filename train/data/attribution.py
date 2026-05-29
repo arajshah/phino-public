@@ -110,20 +110,29 @@ COT_SYSTEM_PROMPT = PROMPT_PATH.read_text(encoding="utf-8").strip()
 class PhysicalAttributor:
     def __init__(
         self,
-        cache_dir: str,
+        store_path: str,
         backend: str = "auto",          # auto | live | mock
         model: str = "gpt-4o",
         seed: int = 42,
     ):
-        self.cache_dir = Path(cache_dir)
-        self.cache_dir.mkdir(parents=True, exist_ok=True)
+        # All attributions live in ONE json file keyed by asset_id (the shared,
+        # git-trackable store). Loaded once, written back whenever a new asset is
+        # attributed, so GPT is never called twice for the same asset.
+        self.store_path = Path(store_path)
+        self.store_path.parent.mkdir(parents=True, exist_ok=True)
+        self._store: dict = {}
+        if self.store_path.exists():
+            try:
+                self._store = json.loads(self.store_path.read_text())
+            except Exception:
+                logger.warning(f"Corrupt attribution store {self.store_path}, starting fresh")
         self.model = model
         self.seed = seed
         self.provider = None  # set to "azure" | "openai" when backend == "live"
         self.backend = self._resolve_backend(backend)
         self._client = None
-        logger.info(f"PhysicalAttributor backend={self.backend} "
-                    f"provider={self.provider} model={model}")
+        logger.info(f"PhysicalAttributor backend={self.backend} provider={self.provider} "
+                    f"model={model} store={self.store_path} ({len(self._store)} cached)")
 
     @staticmethod
     def _detect_provider() -> Optional[str]:
@@ -171,12 +180,11 @@ class PhysicalAttributor:
         if image_paths is None:
             image_paths = [image_path] if image_path else []
 
-        cache_path = self.cache_dir / f"{_safe(asset_id)}.json"
-        if cache_path.exists():
+        if asset_id in self._store:
             try:
-                return AttributionResult.from_dict(json.loads(cache_path.read_text()))
+                return AttributionResult.from_dict(self._store[asset_id])
             except Exception:
-                logger.warning(f"Corrupt attribution cache {cache_path}, recomputing")
+                logger.warning(f"Corrupt entry for {asset_id} in store, recomputing")
 
         if self.backend == "live":
             try:
@@ -189,8 +197,15 @@ class PhysicalAttributor:
             result = self._attribute_mock(asset_id, mass_hint)
 
         result = self._clamp(result)
-        cache_path.write_text(json.dumps(result.to_dict(), indent=2))
+        self._store[asset_id] = result.to_dict()
+        self._save()
         return result
+
+    def _save(self):
+        """Write the whole store back to the single json file (atomic)."""
+        tmp = self.store_path.with_name(self.store_path.name + ".tmp")
+        tmp.write_text(json.dumps(self._store, indent=2))
+        tmp.replace(self.store_path)
 
     # ----- backends ------------------------------------------------------
     def _attribute_live(self, asset_id: str, image_paths: list) -> AttributionResult:
@@ -200,21 +215,16 @@ class PhysicalAttributor:
         if self._client is None:
             self._client, self._deployment = self._build_client()
 
-        content = [{
-            "type": "text",
-            "text": (f"Estimate the physical properties of this single object, "
-                     f"shown from {len(valid)} viewpoints below."),
-        }]
+        # Keep everything in a single user turn (no system role) — a system role
+        # with strict formatting tends to trip Azure's jailbreak prompt-shield.
+        content = [{"type": "text", "text": COT_SYSTEM_PROMPT}]
         for p in valid:
             b64 = base64.b64encode(Path(p).read_bytes()).decode()
             content.append({"type": "image_url",
                             "image_url": {"url": f"data:image/png;base64,{b64}"}})
         resp = self._client.chat.completions.create(
             model=self._deployment,
-            messages=[
-                {"role": "system", "content": COT_SYSTEM_PROMPT},
-                {"role": "user", "content": content},
-            ],
+            messages=[{"role": "user", "content": content}],
             temperature=0.2,
             max_tokens=600,
         )

@@ -113,6 +113,11 @@ class MuJoCoPhysicsEngine:
         plane.rgba = [0.6, 0.6, 0.6, 1.0]
 
         model = spec.compile()
+        # Stability: implicit integrator + more solver iterations so thin / heavy /
+        # bouncy assets don't blow up (NaN QACC) and launch off under any force.
+        model.opt.integrator = mujoco.mjtIntegrator.mjINT_IMPLICITFAST
+        model.opt.iterations = max(int(model.opt.iterations), 100)
+        model.opt.ls_iterations = max(int(model.opt.ls_iterations), 50)
         data = mujoco.MjData(model)
 
         # locate the (first) free joint = the object's root body
@@ -121,11 +126,15 @@ class MuJoCoPhysicsEngine:
         if not free:
             raise RuntimeError(f"No free joint found in asset {mjcf_path}")
         jid = free[0]
+        # Locate the ground plane by geom type (compiled order is NOT "appended last":
+        # worldbody geoms come first). Needed so render framing excludes the floor.
+        plane_gids = [g for g in range(model.ngeom)
+                      if model.geom_type[g] == mujoco.mjtGeom.mjGEOM_PLANE]
         info = {
             "body_id": int(model.jnt_bodyid[jid]),
             "qadr": int(model.jnt_qposadr[jid]),
             "vadr": int(model.jnt_dofadr[jid]),
-            "plane_gid": model.ngeom - 1,  # the plane we appended last
+            "plane_gid": plane_gids[0] if plane_gids else model.ngeom - 1,
         }
         return model, data, info
 
@@ -140,8 +149,9 @@ class MuJoCoPhysicsEngine:
             model.body_inertia[1:] *= ratio
 
         # --- friction + restitution on collision geoms (+ the plane) ---
-        # restitution -> contact solref damping ratio (lower => bouncier)
-        dampratio = float(np.clip(1.0 - physics.restitution, 0.08, 1.0))
+        # restitution -> contact solref damping ratio (lower => bouncier). Floor at
+        # 0.3 so highly-bouncy objects stay numerically stable (still discriminative).
+        dampratio = float(np.clip(1.0 - 0.7 * physics.restitution, 0.3, 1.0))
         timeconst = max(2.0 * self.sim_timestep, 0.01)
         for g in range(model.ngeom):
             is_collision = (model.geom_contype[g] != 0
@@ -245,6 +255,64 @@ class MuJoCoPhysicsEngine:
     ) -> np.ndarray:
         """Single-action variant (kept for parity with the old engine API)."""
         return self.simulate_actions(mjcf_path, physics, actions=[action])
+
+    def simulate_action_render(self, mjcf_path: str, physics, action: DiagnosticAction,
+                               img_size: int = 224):
+        """Run one action and render a frame per timestep.
+
+        Returns (traj (timesteps,13), frames list[HxWx3 uint8]). Used to produce
+        diagnostic videos of how the object moves under each applied force.
+        """
+        import mujoco
+
+        model, data, info = self.build_scene(mjcf_path)
+        self.apply_physics(model, info, physics)
+        qpos0, qvel0 = self._settle(model, data, info)
+        bid, qadr, vadr = info["body_id"], info["qadr"], info["vadr"]
+        obj_mass = float(physics.mass)
+        start_pos = qpos0[qadr:qadr + 3].copy()
+
+        # fixed camera framed on the settled object (a bit wide so motion stays visible)
+        mujoco.mj_forward(model, data)
+        center = data.xpos[bid].copy()
+        obj_radius = 0.0
+        for g in range(model.ngeom):
+            if g == info["plane_gid"]:
+                continue
+            obj_radius = max(obj_radius, float(np.linalg.norm(data.geom_xpos[g] - center))
+                             + float(model.geom_rbound[g]))
+        cam = mujoco.MjvCamera()
+        cam.lookat[:] = center
+        cam.distance = max(0.4, 3.5 * (obj_radius or 0.1))
+        cam.azimuth, cam.elevation = 120.0, -20.0
+
+        data.qpos[:] = qpos0
+        data.qvel[:] = qvel0
+        mujoco.mj_forward(model, data)
+        traj = np.zeros((self.timesteps, 13))
+        frames = []
+        renderer = mujoco.Renderer(model, height=img_size, width=img_size)
+        try:
+            for t in range(self.timesteps):
+                f, tau = self._wrench(action, t, self.timesteps, obj_mass)
+                for _ in range(self.substeps):
+                    data.xfrc_applied[:] = 0.0
+                    data.xfrc_applied[bid, :3] = f
+                    data.xfrc_applied[bid, 3:] = tau
+                    mujoco.mj_step(model, data)
+                traj[t, :3] = np.clip(data.qpos[qadr:qadr + 3] - start_pos,
+                                      -self.pos_clip, self.pos_clip)
+                traj[t, 3:7] = data.qpos[qadr + 3:qadr + 7]
+                traj[t, 7:10] = np.clip(data.qvel[vadr:vadr + 3],
+                                        -self.lin_vel_clip, self.lin_vel_clip)
+                traj[t, 10:13] = np.clip(data.qvel[vadr + 3:vadr + 6],
+                                         -self.ang_vel_clip, self.ang_vel_clip)
+                cam.lookat[:] = data.xpos[bid]   # track the object so it stays in frame
+                renderer.update_scene(data, camera=cam)
+                frames.append(renderer.render())
+        finally:
+            renderer.close()
+        return traj, frames
 
 
 # ==========================================================================
