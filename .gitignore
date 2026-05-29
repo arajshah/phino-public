@@ -1,8 +1,9 @@
 __pycache__/
 *.pyc
-data/
-checkpoints/
-results/
-logs/
+# Generated artifacts (repo-root only, so train/data/ source is NOT ignored)
+/data/
+/checkpoints/
+/results/
+/logs/
 *.egg-info/
 .DS_Store

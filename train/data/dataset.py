@@ -30,6 +30,23 @@ def get_train_transform(img_size: int = 224) -> T.Compose:
     ])
 
 
+def resolve_image_path(data_dir: Path, stored: str) -> Optional[Path]:
+    """Robustly locate an image given a path stored in metadata.
+
+    Handles all of: an absolute path, a path already relative to CWD (e.g.
+    "data/phino_data/images/x.png"), a path relative to data_dir
+    ("images/x.png"), and a bare basename. Returns None if nothing exists.
+    Without this, a stored "data/phino_data/images/x.png" gets data_dir
+    prepended again -> a non-existent path -> a black fallback image for every
+    sample (which silently collapses contrastive training).
+    """
+    p = Path(stored)
+    for c in (p, data_dir / p, data_dir / "images" / p.name):
+        if c.exists():
+            return c
+    return None
+
+
 def get_eval_transform(img_size: int = 224) -> T.Compose:
     return T.Compose([
         T.Resize(img_size),
@@ -304,9 +321,18 @@ class DynaCLIPContrastiveDataset(Dataset):
         entries and computes L2-based similarity. This replaces the old
         parameter-distance proxy with actual trajectory similarity.
         """
-        from train.data.generation import compute_dynamics_similarity_l2
         traj_i = self._get_trajectory(i)
         traj_j = self._get_trajectory(j)
+        # Prefer the fitted trajectory normalizer (identical stats to the
+        # precomputed similarity matrix); fall back to raw MSE if absent.
+        if not hasattr(self, "_normalizer"):
+            from train.data.mujoco_engine import TrajectoryNormalizer
+            norm_path = self.data_dir / "traj_norm.npz"
+            self._normalizer = (TrajectoryNormalizer.load(str(norm_path))
+                                if norm_path.exists() else None)
+        if self._normalizer is not None:
+            return self._normalizer.similarity(traj_i, traj_j)
+        from train.data.generation import compute_dynamics_similarity_l2
         return compute_dynamics_similarity_l2(traj_i, traj_j)
 
     def __len__(self) -> int:
@@ -348,19 +374,13 @@ class DynaCLIPContrastiveDataset(Dataset):
 
     def _load_image(self, idx: int) -> torch.Tensor:
         """Load a REAL image from disk. Returns black image on failure."""
-        img_path_str = self.metadata[idx]["image_path"]
-        img_path = Path(img_path_str)
-
-        # If relative, resolve against data_dir
-        if not img_path.is_absolute():
-            img_path = self.data_dir / img_path
-
-        try:
-            from PIL import Image
-            img = Image.open(img_path).convert("RGB")
-            return self.transform(img)
-        except Exception:
-            return torch.zeros(3, 224, 224)
+        img_path = resolve_image_path(self.data_dir, self.metadata[idx]["image_path"])
+        if img_path is None:
+            raise FileNotFoundError(
+                f"image not found for idx {idx}: {self.metadata[idx]['image_path']}")
+        from PIL import Image
+        img = Image.open(img_path).convert("RGB")
+        return self.transform(img)
 
 
 # ---------------------------------------------------------------------------
@@ -401,11 +421,9 @@ class InvisiblePhysicsDataset(Dataset):
 
     def __getitem__(self, idx: int) -> dict:
         pair = self.pairs[idx]
-        img_path = Path(pair["image_path"])
-        if not img_path.is_absolute():
-            img_path = self.data_dir / img_path
-        if not img_path.exists():
-            raise FileNotFoundError(f"Test image not found: {img_path}")
+        img_path = resolve_image_path(self.data_dir, pair["image_path"])
+        if img_path is None:
+            raise FileNotFoundError(f"Test image not found: {pair['image_path']}")
 
         from PIL import Image
         img = Image.open(img_path).convert("RGB")
@@ -475,17 +493,13 @@ class PhysicsProbeDataset(Dataset):
 
     def __getitem__(self, idx: int) -> dict:
         entry = self.metadata[idx]
-        img_path = Path(entry["image_path"])
-        if not img_path.is_absolute():
-            img_path = self.data_dir / img_path
-
-        try:
-            from PIL import Image
-            img = Image.open(img_path).convert("RGB")
-            img_tensor = self.transform(img)
-        except Exception:
-            # Return a black image for corrupted/unreadable files
-            img_tensor = torch.zeros(3, 224, 224)
+        img_path = resolve_image_path(self.data_dir, entry["image_path"])
+        if img_path is None:
+            raise FileNotFoundError(
+                f"probe image not found: {entry['image_path']}")
+        from PIL import Image
+        img = Image.open(img_path).convert("RGB")
+        img_tensor = self.transform(img)
 
         return {
             "image": img_tensor,

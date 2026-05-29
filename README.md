@@ -60,8 +60,17 @@ pip install -e .
 
 # Offscreen MuJoCo rendering (set automatically by generate_data.py if unset):
 export MUJOCO_GL=egl
-# Live GPT-4o attribution (optional — omit to use the offline mock):
+
+# Live GPT-4o attribution (optional — omit to use the offline mock).
+# Provider is auto-detected from whichever credentials are present:
+#   Azure OpenAI:
+export AZURE_OPENAI_API_KEY=...
+export AZURE_OPENAI_ENDPOINT=https://<resource>.openai.azure.com
+export AZURE_OPENAI_DEPLOYMENT=gpt-4o          # your deployment name
+export AZURE_OPENAI_API_VERSION=2024-10-21     # optional
+#   or standard OpenAI:
 export OPENAI_API_KEY=sk-...
+export OPENAI_BASE_URL=https://.../v1          # optional (proxy/compatible endpoint)
 ```
 
 ## 1. Generate training data

@@ -39,6 +39,7 @@ from train.data.mujoco_engine import (
     MuJoCoPhysicsEngine,
     DiagnosticAction,
     DIAGNOSTIC_ACTIONS,
+    TrajectoryNormalizer,
     compute_dynamics_similarity_mse,
     compute_dynamics_similarity_l2,
     SIMILARITY_METRICS,
@@ -221,6 +222,14 @@ class PhinoDataGenerator:
         if n < 2:
             logger.warning("Not enough fingerprints for a similarity matrix")
             return
+        # Fit + persist the trajectory normalizer (per-action z-score + auto sigma)
+        # so labels are well-spread and the dataset can reuse identical stats.
+        self._normalizer = TrajectoryNormalizer(
+            n_actions=len(DIAGNOSTIC_ACTIONS), timesteps=self.engine.timesteps,
+        ).fit(fingerprints, rng=self.rng)
+        self._normalizer.save(str(self.output_dir / "traj_norm.npz"))
+        logger.info(f"Fitted trajectory normalizer (auto sigma={self._normalizer.sigma:.3f})")
+
         num_pairs = min(max_pairs, n * (n - 1) // 2)
         logger.info(f"Computing {num_pairs} pairwise similarities for {n} configs")
         pairs = np.zeros((num_pairs, 2), dtype=np.int64)
@@ -230,11 +239,11 @@ class PhinoDataGenerator:
                 logger.info(f"  pair {k}/{num_pairs}")
             i, j = self.rng.choice(n, size=2, replace=False)
             pairs[k] = [i, j]
-            sims[k] = self.sim_fn(fingerprints[i], fingerprints[j])
+            sims[k] = self._normalizer.similarity(fingerprints[i], fingerprints[j])
         np.savez_compressed(self.output_dir / "similarity_matrix.npz",
                             pairs=pairs, similarities=sims)
-        logger.info(f"Saved {num_pairs} similarities "
-                    f"(mean={sims.mean():.4f}, std={sims.std():.4f})")
+        logger.info(f"Saved {num_pairs} similarities (mean={sims.mean():.4f}, "
+                    f"std={sims.std():.4f}, ==0: {(sims < 1e-3).mean()*100:.1f}%)")
 
     def _generate_invisible_physics_testset(self, metadata: list, fingerprints: list,
                                             num_pairs: int = 500):
@@ -250,7 +259,9 @@ class PhinoDataGenerator:
             g = multi[self.rng.integers(len(multi))]
             i, j = self.rng.choice(groups[g], size=2, replace=False)
             ei, ej = metadata[i], metadata[j]
-            dyn_sim = float(self.sim_fn(fingerprints[i], fingerprints[j]))
+            sim_fn = (self._normalizer.similarity
+                      if getattr(self, "_normalizer", None) else self.sim_fn)
+            dyn_sim = float(sim_fn(fingerprints[i], fingerprints[j]))
             test_pairs.append({
                 "image_path": ei["image_path"], "category": ei["category"],
                 "material": ei["material"],
