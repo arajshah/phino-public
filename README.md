@@ -1,3 +1,5 @@
+https://drive.google.com/drive/folders/12a8F8zEfoZ542Ueq9VDHrAlJzYTBsg3w?usp=sharing
+
 # PHINO: Physical Intuition via Newtonian Observations
 
 Teach a DINOv2 vision backbone *physical intuition* by contrastive fine-tuning on
