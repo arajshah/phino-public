@@ -1,0 +1,11 @@
+# DINO-WM on PushT with PHINO no-restitution encoder swapped in.
+defaults:
+  - prejepa
+  - _self_
+
+backbone:
+  name: /home/colligo/phino/checkpoints/phino_hf/phino_norest  # converted HF Dinov2Model
+  type: phino_norest
+
+dataset_name: galilai-group--lewm-pusht/pusht_expert_train.lance
+output_model_name: pusht_phino_norest

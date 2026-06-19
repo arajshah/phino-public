@@ -1,0 +1,12 @@
+# DINO-WM baseline on PushT — stock frozen DINOv2-base encoder.
+# Inherits the full DINO-WM (prejepa) recipe; overrides only encoder + data + name.
+defaults:
+  - prejepa
+  - _self_
+
+backbone:
+  name: dinov2_base          # HF alias -> facebook/dinov2-base (ViT-B/14, 768-d)
+  type: dinov2_base
+
+dataset_name: galilai-group--lewm-pusht/pusht_expert_train.lance
+output_model_name: pusht_baseline

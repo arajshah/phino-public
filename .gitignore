@@ -4,7 +4,22 @@ __pycache__/
 /data/
 /checkpoints/
 /results/
+downloads/
+outputs/
 /logs/
 *.egg-info/
 .DS_Store
 MUJOCO_LOG.TXT
+
+# PHINO x DINO-WM experiment
+phino_wm/logs/
+wandb/
+multirun/
+.venv*/
+*.lance/
+# vendored stable-worldmodel: keep source, drop heavy doc media + caches
+stable-worldmodel/docs/assets/
+stable-worldmodel/**/__pycache__/
+stable-worldmodel/.pytest_cache/
+stable-worldmodel/outputs/
+stable-worldmodel/multirun/
