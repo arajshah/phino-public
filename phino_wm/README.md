@@ -106,7 +106,34 @@ rm -rf ~/.stable_worldmodel/datasets/galilai-group--lewm-pusht
 phino_wm/run_task.sh ogbcube
 ```
 
-Checkpoints are written to `~/.stable_worldmodel/checkpoints/<output_model_name>/`.
+Checkpoints are written to `~/.stable_worldmodel/checkpoints/<output_model_name>/`
+(`weights_epoch_{5,10}.pt` + `config.json`).
+
+## Evaluate (success rate) & benchmark
+
+DINO-WM is evaluated by **planning**: a CEM solver uses the trained world model
+to reach goal states sampled from the dataset, on the real environment
+(`swm/PushT-v1`, `swm/OGBCube-v0`, …). The metric is **success rate**.
+
+```bash
+# one encoder
+phino_wm/eval_dinowm.py is run via python; e.g.
+python phino_wm/eval_dinowm.py policy=pusht_baseline/weights_epoch_10.pt \
+    eval.dataset_name=galilai-group--lewm-pusht/pusht_expert_train.lance eval.num_eval=50
+
+# all 3 encoders -> phino_wm/results/<task>_benchmark.md
+phino_wm/benchmark.sh pusht            # epoch 10, 50 eval episodes (defaults)
+phino_wm/benchmark.sh pusht 10 50
+```
+
+`eval_dinowm.py` is a thin wrapper (like `train_dinowm.py`) that monkeypatches
+the lance reader so eval_wm.py's index-column lookups work, then runs the
+**unmodified** `eval_wm.py`. Needs the env extras (`pygame pymunk shapely
+opencv-python-headless` for PushT; `ogbench` for cube/scene).
+
+> **Order matters:** eval samples start/goal states from the task dataset, so
+> run `benchmark.sh` **before** deleting the dataset. Per task:
+> `download → run_task.sh (train) → benchmark.sh (eval) → delete dataset → next`.
 
 ## Environment notes
 
