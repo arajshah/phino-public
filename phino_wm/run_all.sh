@@ -71,8 +71,17 @@ run_pipeline() {
 
     echo "=== [$(date '+%F %T')] TASK $task: training all encoders ==="
     bash "$REPO/phino_wm/run_task.sh" "$task" $EXTRA
+
+    # benchmark eval BEFORE the dataset is freed (next task deletes it). Eval
+    # failures are non-fatal so training of later tasks still proceeds.
+    if [[ "${RUN_EVAL:-1}" == "1" ]]; then
+      echo "=== [$(date '+%F %T')] TASK $task: benchmark eval (epoch ${EVAL_EPOCH:-10}, ${NUM_EVAL:-50} eps) ==="
+      bash "$REPO/phino_wm/benchmark.sh" "$task" "${EVAL_EPOCH:-10}" "${NUM_EVAL:-50}" \
+        || echo "=== [$(date '+%F %T')] benchmark $task FAILED (see phino_wm/results/) ==="
+    fi
   done
   echo "=== [$(date '+%F %T')] ALL TASKS COMPLETE ==="
+  echo "=== Benchmark results: $REPO/phino_wm/results/*_benchmark.md ==="
 }
 
 # If called with RUN_INLINE=1, execute directly (used inside tmux). Otherwise
@@ -82,7 +91,9 @@ if [[ "${RUN_INLINE:-0}" == "1" ]]; then
 else
   tmux kill-session -t dwm_all 2>/dev/null || true
   tmux new-session -d -s dwm_all \
-    "RUN_INLINE=1 KEEP_ALL_DATA='${KEEP_ALL_DATA:-0}' BATCH='${BATCH:-}' LR='${LR:-}' bash '$REPO/phino_wm/run_all.sh' $EXTRA"
+    "RUN_INLINE=1 KEEP_ALL_DATA='${KEEP_ALL_DATA:-0}' BATCH='${BATCH:-}' LR='${LR:-}' \
+     RUN_EVAL='${RUN_EVAL:-1}' EVAL_EPOCH='${EVAL_EPOCH:-10}' NUM_EVAL='${NUM_EVAL:-50}' \
+     bash '$REPO/phino_wm/run_all.sh' $EXTRA"
   echo "Launched tmux session 'dwm_all':"
   echo "  pusht -> ogbcube -> ogbscene  (each: phino_full, phino_norest, baseline; 2 parallel single-GPU)"
   echo "Monitor:  tmux attach -t dwm_all   |   tail -f phino_wm/logs/pusht_phino_full.log"
