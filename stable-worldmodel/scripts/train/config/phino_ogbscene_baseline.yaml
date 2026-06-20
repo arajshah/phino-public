@@ -1,0 +1,11 @@
+# DINO-WM baseline on OGB-Scene — stock frozen DINOv2-base encoder.
+defaults:
+  - prejepa
+  - _self_
+
+backbone:
+  name: dinov2_base
+  type: dinov2_base
+
+dataset_name: galilai-group--ogb_scene_single/ogb_scene_single.lance
+output_model_name: ogbscene_baseline

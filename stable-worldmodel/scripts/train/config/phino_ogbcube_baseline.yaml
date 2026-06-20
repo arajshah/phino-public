@@ -1,0 +1,11 @@
+# DINO-WM baseline on OGB-Cube — stock frozen DINOv2-base encoder.
+defaults:
+  - prejepa
+  - _self_
+
+backbone:
+  name: dinov2_base
+  type: dinov2_base
+
+dataset_name: galilai-group--ogb_cube_single/ogb_cube_single.lance
+output_model_name: ogbcube_baseline

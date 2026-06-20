@@ -1,0 +1,11 @@
+# DINO-WM on OGB-Cube with PHINO full (all-forces) encoder swapped in.
+defaults:
+  - prejepa
+  - _self_
+
+backbone:
+  name: /home/colligo/phino/checkpoints/phino_hf/phino_full
+  type: phino_full
+
+dataset_name: galilai-group--ogb_cube_single/ogb_cube_single.lance
+output_model_name: ogbcube_phino_full

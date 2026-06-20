@@ -1,0 +1,11 @@
+# DINO-WM on OGB-Cube with PHINO no-restitution encoder swapped in.
+defaults:
+  - prejepa
+  - _self_
+
+backbone:
+  name: /home/colligo/phino/checkpoints/phino_hf/phino_norest
+  type: phino_norest
+
+dataset_name: galilai-group--ogb_cube_single/ogb_cube_single.lance
+output_model_name: ogbcube_phino_norest

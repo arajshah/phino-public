@@ -1,0 +1,11 @@
+# DINO-WM on OGB-Scene with PHINO full (all-forces) encoder swapped in.
+defaults:
+  - prejepa
+  - _self_
+
+backbone:
+  name: /home/colligo/phino/checkpoints/phino_hf/phino_full
+  type: phino_full
+
+dataset_name: galilai-group--ogb_scene_single/ogb_scene_single.lance
+output_model_name: ogbscene_phino_full
