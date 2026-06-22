@@ -13,6 +13,7 @@ MUJOCO_LOG.TXT
 
 # PHINO x DINO-WM experiment
 phino_wm/logs/
+phino_wm/results
 wandb/
 multirun/
 .venv*/
