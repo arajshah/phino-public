@@ -161,10 +161,25 @@ def dinowm_forward(self, batch, stage, cfg):
 @hydra.main(version_base=None, config_path='./config', config_name='prejepa')
 def run(cfg):
     # --- Dataset ---
+    cache_dir = os.environ.get('LOCAL_DATASET_DIR', None)
+
+    # Probe lance schema so we can drop encoding keys absent from this dataset
+    # (avoids Hydra dict-merge leaving parent-config keys like 'proprio' that
+    # don't exist in every task's lance table).
+    import lance as _lance
+    _datasets_dir = swm.data.utils.get_cache_dir(cache_dir, sub_folder='datasets')
+    _probe_path = _datasets_dir / cfg.dataset_name
+    if _probe_path.exists():
+        _schema_cols = set(_lance.dataset(str(_probe_path)).schema.names)
+        _missing = [k for k in cfg.wm.get('encoding', {}) if k not in _schema_cols]
+        if _missing:
+            print(f'[prejepa] Removing encoding keys not in dataset schema: {_missing}')
+            with open_dict(cfg):
+                for _k in _missing:
+                    del cfg.wm.encoding[_k]
+
     encoding_keys = list(cfg.wm.get('encoding', {}).keys())
     keys_to_load = ['pixels'] + encoding_keys
-
-    cache_dir = os.environ.get('LOCAL_DATASET_DIR', None)
     print(
         f'Loading dataset "{cfg.dataset_name}" from {"local cache: " + cache_dir if cache_dir else "default location"}'
     )

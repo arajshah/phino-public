@@ -9,3 +9,8 @@ backbone:
 
 dataset_name: galilai-group--ogb_cube_single/ogb_cube_single.lance
 output_model_name: ogbcube_phino_full
+
+wm:
+  encoding:
+    observation: 28
+    action: 5
