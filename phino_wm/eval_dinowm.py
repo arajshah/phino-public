@@ -50,10 +50,11 @@ def _get_row_data(self, row_idx):
         else [row_idx],
         dtype=int,
     )
-    if "ep_idx" not in out:
-        out["ep_idx"] = np.asarray(_orig_gcd(self, "episode_idx"))[idxs]
-    if "step_idx" not in out:
-        out["step_idx"] = np.asarray(_orig_gcd(self, "step_idx"))[idxs]
+    # Always override ep_idx/step_idx with true integer index columns.
+    # Some datasets (e.g. ogbcube) store ep_idx as a float32 data column;
+    # _load_slice uses it as an array index and requires a plain integer.
+    out["ep_idx"] = np.asarray(_orig_gcd(self, "episode_idx"), dtype=np.int64)[idxs]
+    out["step_idx"] = np.asarray(_orig_gcd(self, "step_idx"), dtype=np.int64)[idxs]
     return out
 
 

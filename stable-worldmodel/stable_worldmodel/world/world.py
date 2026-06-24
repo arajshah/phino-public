@@ -608,7 +608,16 @@ def _apply_callables(env, callables, init_state):
             if data.get('in_dataset', True):
                 key = data.get('value')
                 if key in init_state:
-                    prepared[name] = deepcopy(init_state[key])
+                    val = deepcopy(init_state[key])
+                    # scalar index args must be plain Python ints
+                    if name.endswith('_id') and hasattr(val, 'item'):
+                        val = int(val.item())
+                    elif name.endswith('_id') and not isinstance(val, int):
+                        val = int(val)
+                    # squeeze 1-element arrays to Python scalars
+                    elif hasattr(val, 'ndim') and val.ndim >= 1 and val.size == 1:
+                        val = val.item()
+                    prepared[name] = val
             else:
                 prepared[name] = data.get('value')
         getattr(env, method)(**prepared)

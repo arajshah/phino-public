@@ -225,7 +225,7 @@ class SceneEnv(ManipSpaceEnv):
             for key, value in kwargs.items()
             if key.startswith('button_state_')
         }
-        button_states = [button_data[i] for i in range(self._num_buttons)]
+        button_states = [int(button_data[i]) for i in range(self._num_buttons)]
 
         self._cur_button_states = button_states.copy()
         self._apply_button_states()

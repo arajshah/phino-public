@@ -9,3 +9,8 @@ backbone:
 
 dataset_name: galilai-group--ogb_scene_single/ogb_scene_single.lance
 output_model_name: ogbscene_phino_norest
+
+wm:
+  encoding:
+    observation: 40
+    action: 5

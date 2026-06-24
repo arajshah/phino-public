@@ -56,19 +56,20 @@ class VideoPipeline(spt.data.transforms.Transform):
 class SaveCkptCallback(Callback):
     """Callback to save model checkpoint after each epoch using save_pretrained."""
 
-    def __init__(self, run_name, cfg, epoch_interval=1):
+    def __init__(self, run_name, cfg, epoch_interval=1, epoch_offset=0):
         super().__init__()
         self.run_name = run_name
         self.cfg = cfg
         self.epoch_interval = epoch_interval
+        self.epoch_offset = epoch_offset  # add to trainer epoch for correct naming when resuming
 
     def on_train_epoch_end(self, trainer, pl_module):
         if not trainer.is_global_zero:
             return
-        epoch = trainer.current_epoch + 1
+        epoch = trainer.current_epoch + 1 + self.epoch_offset
         if epoch % self.epoch_interval == 0:
             self._save(pl_module.model, epoch)
-        if epoch == trainer.max_epochs:
+        if trainer.current_epoch + 1 == trainer.max_epochs:
             self._save(pl_module.model, epoch)
 
     def _save(self, model, epoch):
@@ -282,6 +283,12 @@ def run(cfg):
 
     world_model = hydra.utils.instantiate(cfg.model, encoder=encoder)
 
+    if cfg.get('resume_from', None):
+        state = torch.load(cfg.resume_from, map_location='cpu')
+        missing, unexpected = world_model.load_state_dict(state, strict=False)
+        print(f'[prejepa] Loaded weights from {cfg.resume_from} '
+              f'(missing={len(missing)}, unexpected={len(unexpected)})')
+
     world_model = spt.Module(
         model=world_model,
         forward=partial(dinowm_forward, cfg=cfg),
@@ -314,6 +321,7 @@ def run(cfg):
                 run_name=cfg.output_model_name,
                 cfg=cfg.model,
                 epoch_interval=5,
+                epoch_offset=cfg.get('epoch_offset', 0),
             ),
             pl.pytorch.callbacks.LearningRateMonitor(logging_interval='step'),
         ],
