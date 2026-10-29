@@ -122,6 +122,7 @@ def main():
                         default=["phino_clsmean", "dinov2_vitb14_clsmean"],
                         help=f"Backbones to evaluate. Available: {list(LOADERS.keys())}")
     parser.add_argument("--num_seeds", type=int, default=5)
+    parser.add_argument("--split_seed", type=int, default=42)
     parser.add_argument("--num_epochs", type=int, default=100)
     parser.add_argument("--batch_size", type=int, default=256)
     parser.add_argument("--num_workers", type=int, default=4)
@@ -141,11 +142,14 @@ def main():
         return
 
     train_loader = create_probe_dataloader(args.data_dir, split="train",
-                                           batch_size=args.batch_size, num_workers=args.num_workers)
+                                           batch_size=args.batch_size, num_workers=args.num_workers,
+                                           seed=args.split_seed)
     val_loader = create_probe_dataloader(args.data_dir, split="val",
-                                         batch_size=args.batch_size, num_workers=args.num_workers)
+                                         batch_size=args.batch_size, num_workers=args.num_workers,
+                                           seed=args.split_seed)
     test_loader = create_probe_dataloader(args.data_dir, split="test",
-                                          batch_size=args.batch_size, num_workers=args.num_workers)
+                                          batch_size=args.batch_size, num_workers=args.num_workers,
+                                           seed=args.split_seed)
 
     evaluator = PhysicsLinearProbing(
         backbones=backbones,
