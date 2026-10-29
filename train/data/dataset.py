@@ -14,6 +14,7 @@ import numpy as np
 import torch
 from torch.utils.data import Dataset, DataLoader, DistributedSampler
 import torchvision.transforms as T
+from train.data.splits import split_metadata_by_asset
 
 logger = logging.getLogger(__name__)
 
@@ -487,16 +488,8 @@ class PhysicsProbeDataset(Dataset):
         with open(meta_path) as f:
             all_meta = json.load(f)
 
-        # Train/val/test split: 70/15/15
-        n = len(all_meta)
-        idx = self.rng.permutation(n)
-        if split == "train":
-            sel = idx[:int(0.7 * n)]
-        elif split == "val":
-            sel = idx[int(0.7 * n):int(0.85 * n)]
-        else:
-            sel = idx[int(0.85 * n):]
-        self.metadata = [all_meta[i] for i in sel]
+        # Keep all physics variants of each asset in one probe split.
+        self.metadata = split_metadata_by_asset(all_meta, split=split, seed=seed)
         logger.info(f"PhysicsProbeDataset({split}): {len(self.metadata)} entries")
 
     def __len__(self) -> int:
@@ -550,8 +543,9 @@ def create_probe_dataloader(
     split: str = "train",
     batch_size: int = 256,
     num_workers: int = 4,
+    seed: int = 42,
 ) -> DataLoader:
-    dataset = PhysicsProbeDataset(data_dir=data_dir, split=split)
+    dataset = PhysicsProbeDataset(data_dir=data_dir, split=split, seed=seed)
     return DataLoader(
         dataset,
         batch_size=batch_size,
